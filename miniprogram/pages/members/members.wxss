@@ -1,0 +1,177 @@
+.container {
+  padding: 30rpx;
+  background: #f7f7f7;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.filters {
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+  margin-bottom: 20rpx;
+}
+
+.filter-row {
+  margin-bottom: 20rpx;
+}
+
+.input {
+  width: 100%;
+  height: 80rpx;
+  background: #f6f7fb;
+  border-radius: 12rpx;
+  padding: 0 20rpx;
+  box-sizing: border-box;
+  font-size: 28rpx;
+}
+
+.picker {
+  height: 80rpx;
+  display: flex;
+  align-items: center;
+  background: #f6f7fb;
+  border-radius: 12rpx;
+  padding: 0 20rpx;
+  box-sizing: border-box;
+  font-size: 28rpx;
+  color: #333;
+}
+
+.btn-row {
+  display: flex;
+  gap: 20rpx;
+}
+
+.btn {
+  flex: 1;
+  height: 80rpx;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  border: none;
+}
+
+.primary {
+  background: #4a90e2;
+  color: #fff;
+}
+
+.secondary {
+  background: #f0f0f0;
+  color: #333;
+}
+
+.success {
+  background: #2ed573;
+  color: white;
+}
+
+.refresh {
+  background: #28a745;
+  color: #fff;
+}
+
+/* 操作按钮区域样式 */
+.actions {
+  margin-top: 20rpx;
+  padding-top: 20rpx;
+  border-top: 1rpx solid #f0f0f0;
+}
+
+.action-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15rpx;
+}
+
+/* 当只有一个按钮时，占满宽度 */
+.action-grid.single-button {
+  grid-template-columns: 1fr;
+}
+
+/* 两个按钮时的特殊布局 */
+.action-grid.two-buttons {
+  grid-template-columns: 1fr 1fr;
+}
+
+.grid-item {
+  display: flex;
+}
+
+.grid-item .btn {
+  flex: 1;
+  font-size: 24rpx;
+  padding: 8rpx 12rpx;
+  height: auto;
+  min-height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.status {
+  color: #666;
+  font-size: 26rpx;
+  padding: 10rpx 0;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.card {
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.name {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tag {
+  font-size: 24rpx;
+  color: #4a90e2;
+  padding-left: 16rpx;
+  flex-shrink: 0;
+}
+
+.line {
+  font-size: 26rpx;
+  color: #666;
+  line-height: 1.6;
+}
+
+.member {
+  margin-top: 16rpx;
+  padding-top: 16rpx;
+  border-top: 1rpx solid #f0f0f0;
+}
+
+.empty {
+  padding: 80rpx 0;
+  text-align: center;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: #999;
+}

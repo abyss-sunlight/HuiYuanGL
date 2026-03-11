@@ -1,0 +1,100 @@
+<view class="container">
+  <view class="filters">
+    <view class="filter-row">
+      <input class="input" placeholder="手机号（支持模糊）" value="{{filters.phone}}" bindinput="onPhoneInput" />
+    </view>
+
+    <view class="filter-row">
+      <input class="input" placeholder="姓（支持模糊）" value="{{filters.lastName}}" bindinput="onLastNameInput" />
+    </view>
+
+    <view class="filter-row">
+      <picker mode="selector" range="{{permissionOptions}}" range-key="label" value="{{permissionIndex}}" bindchange="onPermissionChange">
+        <view class="picker">身份：{{permissionOptions[permissionIndex].label}}</view>
+      </picker>
+    </view>
+
+    <view class="btn-row">
+      <button class="btn secondary" bindtap="resetFilters">重置</button>
+      <button class="btn primary" bindtap="search">查询</button>
+    </view>
+    
+    <view class="btn-row">
+      <button class="btn refresh" bindtap="refreshData">刷新数据</button>
+    </view>
+  </view>
+
+  <view class="status" wx:if="{{statusText}}">{{statusText}}</view>
+
+  <view class="list" wx:if="{{list.length > 0}}">
+    <view class="card" wx:for="{{list}}" wx:key="userId">
+      <view class="top">
+        <view class="name">{{item.username}}（{{item.lastName}}{{item.gender === 1 ? '男士' : '女士'}}）</view>
+        <view class="tag">{{item.permissionName}}</view>
+      </view>
+      <view class="line">手机号：{{item.phone}}</view>
+      <view class="line">性别：{{item.gender === 1 ? '男' : '女'}}</view>
+
+      <view class="member" wx:if="{{item.permissionLevel === 3}}">
+        <view class="line">余额：¥{{item.amount || '0.00'}}</view>
+        <view class="line">折扣：{{item.discount ? (item.discount * 10) + '折' : '无折扣'}}</view>
+      </view>
+      
+      <!-- 操作按钮区域 -->
+      <view class="actions" wx:if="{{userInfo.permissionLevel <= 2}}">
+        <!-- 游客卡片按钮 - 员工及以上可以操作 -->
+        <view class="action-grid" wx:if="{{item.permissionLevel === 4}}">
+          <view class="grid-item">
+            <button class="btn primary" bindtap="addEyelashRecord" data-user="{{item}}">添加美睫记录</button>
+          </view>
+          <view class="grid-item">
+            <button class="btn success" bindtap="addRechargeRecord" data-user="{{item}}">充值</button>
+          </view>
+          <view class="grid-item">
+            <button class="btn secondary" bindtap="editMember" data-user="{{item}}">编辑</button>
+          </view>
+          <view class="grid-item">
+            <button class="btn danger" bindtap="deleteMember" data-user="{{item}}">删除</button>
+          </view>
+        </view>
+        
+        <!-- 会员卡片按钮 - 员工及以上可以操作 -->
+        <view class="action-grid" wx:if="{{item.permissionLevel === 3}}">
+          <view class="grid-item">
+            <button class="btn primary" bindtap="addEyelashRecord" data-user="{{item}}">添加美睫记录</button>
+          </view>
+          <view class="grid-item">
+            <button class="btn primary" bindtap="addConsumeRecord" data-user="{{item}}">会员消费/充值</button>
+          </view>
+          <view class="grid-item">
+            <button class="btn secondary" bindtap="editMember" data-user="{{item}}">编辑</button>
+          </view>
+          <view class="grid-item">
+            <button class="btn danger" bindtap="deleteMember" data-user="{{item}}">删除</button>
+          </view>
+        </view>
+        
+        <!-- 员工卡片按钮 - 只有老板可以操作 -->
+        <view class="action-grid" wx:if="{{item.permissionLevel === 2 && userInfo.permissionLevel === 1}}">
+          <view class="grid-item">
+            <button class="btn secondary" bindtap="editMember" data-user="{{item}}">编辑</button>
+          </view>
+          <view class="grid-item">
+            <button class="btn danger" bindtap="deleteMember" data-user="{{item}}">删除</button>
+          </view>
+        </view>
+        
+        <!-- 老板卡片按钮 - 只有老板可以操作自己 -->
+        <view class="action-grid" wx:if="{{item.permissionLevel === 1 && userInfo.permissionLevel === 1 && item.userId === userInfo.userId}}">
+          <view class="grid-item">
+            <button class="btn secondary" bindtap="editMember" data-user="{{item}}">编辑</button>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="empty" wx:else>
+    <view class="empty-text">暂无数据</view>
+  </view>
+</view>

@@ -1,0 +1,372 @@
+// 导入网络请求工具
+const { request } = require('../../utils/request')
+// 导入认证相关工具函数
+const { isLoggedIn, getUserInfo, logout } = require('../../utils/auth')
+
+// 页面对象定义
+Page({
+  // 页面数据初始化
+  data: {
+    isLoggedIn: false,           // 登录状态标识
+    userInfo: null,             // 用户信息对象
+    showSmsForm: false,         // 短信登录表单显示状态
+    showPasswordForm: false,     // 密码登录表单显示状态
+    
+    // 短信登录相关数据
+    smsPhone: '',               // 短信登录手机号
+    smsCode: '',                // 短信验证码
+    smsCodeSending: false,       // 短信验证码发送状态
+    smsCodeText: '获取验证码',  // 短信验证码按钮文本
+    smsLogging: false,          // 短信登录状态
+    
+    // 密码登录相关数据
+    passwordPhone: '',          // 密码登录手机号
+    password: '',              // 密码登录密码
+    showPassword: false,       // 密码显示/隐藏状态
+    passwordLogging: false      // 密码登录状态
+  },
+
+  // 页面生命周期：页面加载时执行
+  onLoad() {
+    // 检查当前登录状态
+    this.checkLoginStatus()
+  },
+
+  // 页面生命周期：页面显示时执行
+  onShow() {
+    // 每次显示页面都检查登录状态，确保状态同步
+    this.checkLoginStatus()
+  },
+
+  // 检查登录状态方法
+  // 从本地存储获取登录状态和用户信息，更新页面显示
+  checkLoginStatus() {
+    const loggedIn = isLoggedIn()    // 获取登录状态
+    const userInfo = getUserInfo()   // 获取用户信息
+    // 更新页面数据
+    this.setData({
+      isLoggedIn: loggedIn,
+      userInfo: userInfo
+    })
+  },
+
+  // 显示短信登录表单
+  // 切换到短信登录界面
+  showSmsLogin() {
+    this.setData({ showSmsForm: true })  // 显示短信登录表单
+    this.hidePasswordLogin()
+  },
+
+  // 隐藏短信登录表单
+  // 关闭短信登录界面并清空表单数据
+  hideSmsLogin() {
+    this.setData({ 
+      showSmsForm: false,  // 隐藏短信登录表单
+      smsPhone: '',        // 清空手机号
+      smsCode: ''         // 清空验证码
+    })
+  },
+
+  // 短信手机号输入
+  // 处理短信登录手机号输入事件
+  onSmsPhoneInput(e) {
+    this.setData({ smsPhone: e.detail.value })  // 更新手机号
+  },
+
+  // 短信验证码输入
+  // 处理短信验证码输入事件
+  onSmsCodeInput(e) {
+    this.setData({ smsCode: e.detail.value })  // 更新验证码
+  },
+
+  // 发送短信验证码
+  // 调用后端接口发送短信验证码
+  sendSmsCode() {
+    const phone = this.data.smsPhone  // 获取输入的手机号
+    
+    // 验证手机号格式
+    if (!phone || phone.length !== 11) {
+      wx.showToast({ title: '请输入正确的手机号', icon: 'none' })
+      return
+    }
+
+    // 设置发送状态，防止重复点击
+    this.setData({ smsCodeSending: true })
+    
+    // 调用后端发送短信接口
+    request({
+      url: '/api/auth/send-sms',
+      method: 'POST',
+      data: { phone }  // 发送手机号
+    }).then(() => {
+      // 发送成功
+      wx.showToast({ title: '验证码已发送', icon: 'success' })
+      this.startCountdown()  // 开始倒计时
+    }).catch((err) => {
+      // 发送失败
+      this.setData({ smsCodeSending: false })  // 重置发送状态
+      wx.showToast({
+        title: err.message || '发送失败',
+        icon: 'none'
+      })
+    })
+  },
+
+  // 开始倒计时
+  // 短信验证码发送后的60秒倒计时
+  startCountdown() {
+    let count = 60  // 倒计时60秒
+    const timer = setInterval(() => {
+      count--
+      if (count <= 0) {
+        // 倒计时结束
+        clearInterval(timer)  // 清除定时器
+        this.setData({ 
+          smsCodeText: '获取验证码',  // 恢复按钮文本
+          smsCodeSending: false        // 重置发送状态
+        })
+      } else {
+        // 更新倒计时显示
+        this.setData({ smsCodeText: `${count}秒后重发` })
+      }
+    }, 1000)  // 每秒执行一次
+  },
+
+  // 短信登录提交
+  // 提交短信验证码进行登录
+  smsLoginSubmit() {
+    const { smsPhone, smsCode } = this.data  // 获取表单数据
+    
+    // 验证手机号格式
+    if (!smsPhone || smsPhone.length !== 11) {
+      wx.showToast({ title: '请输入正确的手机号', icon: 'none' })
+      return
+    }
+    
+    // 验证验证码格式
+    if (!smsCode || smsCode.length !== 6) {
+      wx.showToast({ title: '请输入6位验证码', icon: 'none' })
+      return
+    }
+
+    // 设置登录状态，防止重复提交
+    this.setData({ smsLogging: true })
+    
+    // 调用后端短信登录接口
+    request({
+      url: '/api/auth/sms-login',
+      method: 'POST',
+      data: {
+        loginType: 'sms',  // 登录类型
+        phone: smsPhone,    // 手机号
+        code: smsCode       // 验证码
+      }
+    }).then((response) => {
+      // 登录成功
+      this.handleLoginSuccess(response)  // 统一处理登录成功
+    }).catch((err) => {
+      // 登录失败
+      this.setData({ smsLogging: false })  // 重置登录状态
+      wx.showToast({
+        title: err.message || '登录失败',
+        icon: 'none'
+      })
+    })
+  },
+
+  // 显示密码登录表单
+  // 切换到密码登录界面
+  showPasswordLogin() {
+    this.setData({ showPasswordForm: true })  // 显示密码登录表单
+    this.hideSmsLogin()
+  },
+
+  // 隐藏密码登录表单
+  // 关闭密码登录界面并清空表单数据
+  hidePasswordLogin() {
+    this.setData({ 
+      showPasswordForm: false,  // 隐藏密码登录表单
+      passwordPhone: '',       // 清空手机号
+      password: ''            // 清空密码
+    })
+  },
+
+  // 密码登录手机号输入
+  // 处理密码登录手机号输入事件
+  onPasswordPhoneInput(e) {
+    this.setData({ passwordPhone: e.detail.value })  // 更新手机号
+  },
+
+  // 密码输入
+  // 处理密码输入事件
+  onPasswordInput(e) {
+    this.setData({ password: e.detail.value })  // 更新密码
+  },
+
+  // 切换密码显示/隐藏
+  // 切换密码输入框的显示状态
+  togglePassword() {
+    console.log('togglePassword 被调用')
+    console.log('当前 showPassword 状态:', this.data.showPassword)
+    const newState = !this.data.showPassword
+    console.log('新的 showPassword 状态:', newState)
+    this.setData({ showPassword: newState })
+  },
+
+  // 密码登录提交
+  // 提交手机号和密码进行登录
+  passwordLoginSubmit() {
+    const { passwordPhone, password } = this.data  // 获取表单数据
+    
+    // 验证手机号格式
+    if (!passwordPhone || passwordPhone.length !== 11) {
+      wx.showToast({ title: '请输入正确的手机号', icon: 'none' })
+      return
+    }
+    
+    // 验证密码不为空
+    if (!password) {
+      wx.showToast({ title: '请输入密码', icon: 'none' })
+      return
+    }
+
+    // 设置登录状态，防止重复提交
+    this.setData({ passwordLogging: true })
+    
+    // 调用后端密码登录接口
+    request({
+      url: '/api/auth/password-login',
+      method: 'POST',
+      data: {
+        loginType: 'password',  // 登录类型
+        phone: passwordPhone,    // 手机号
+        password: password      // 密码
+      }
+    }).then((response) => {
+      // 登录成功
+      this.handleLoginSuccess(response)  // 统一处理登录成功
+    }).catch((err) => {
+      // 登录失败
+      this.setData({
+        passwordLogging: false,  // 重置登录状态
+        password: ''             // 清空密码
+      })
+      wx.showToast({
+        title: err.message || '登录失败',
+        icon: 'none'
+      })
+    })
+  },
+
+  // 处理登录成功
+  // 统一处理登录成功后的逻辑
+  handleLoginSuccess(response) {
+    console.log('处理登录成功:', response)  // 调试日志
+    wx.hideLoading()  // 隐藏加载提示
+    
+    // 保存token和用户信息到本地存储
+    wx.setStorageSync('token', response.token)
+    wx.setStorageSync('userInfo', {
+      userId: response.userId,                    // 用户ID
+      username: response.username,                // 用户名
+      lastName: response.lastName,                // 姓氏
+      phone: response.phone,                      // 用户手机号
+      gender: response.gender,                    // 性别
+      memberNo: response.memberNo,                // 会员号
+      amount: response.amount,                    // 账户金额
+      discount: response.discount,                 // 折扣率
+      permissionLevel: response.permissionLevel,     // 权限等级
+      permissionName: response.permissionName,       // 权限名称
+      avatarUrl: response.avatarUrl               // 用户头像
+    })
+    
+    wx.showToast({ title: '登录成功', icon: 'success' })  // 显示成功提示
+
+    // 清理表单状态与 loading，避免按钮 loading 一直存在
+    this.setData({
+      showSmsForm: false,
+      showPasswordForm: false,
+
+      smsPhone: '',
+      smsCode: '',
+      smsCodeSending: false,
+      smsCodeText: '获取验证码',
+      smsLogging: false,
+
+      passwordPhone: '',
+      password: '',
+      showPassword: false,
+      passwordLogging: false
+    })
+
+    // 更新页面状态，刷新显示
+    this.checkLoginStatus()
+  },
+
+  // 查看帮助
+  // 显示帮助信息（功能开发中）
+  viewHelp() {
+    wx.showToast({
+      title: '帮助功能开发中',
+      icon: 'none'
+    })
+  },
+
+  // 查看关于
+  // 显示应用关于信息
+  viewAbout() {
+    wx.showModal({
+      title: '关于',
+      content: '会员管理系统 v1.0\n\n基于 Spring Boot + 微信小程序开发\n提供完整的用户认证和会员管理功能',
+      showCancel: false  // 只显示确定按钮
+    })
+  },
+
+  // 跳转设置密码
+  // 进入设置/重置密码页面（通过短信验证码）
+  goToSetPassword() {
+    wx.navigateTo({
+      url: '/pages/set-password/set-password'
+    })
+  },
+
+  // 退出登录
+  // 处理用户退出登录操作
+  logout() {
+    wx.showModal({
+      title: '确认退出',
+      content: '确定要退出登录吗？',
+      success: (res) => {
+        if (res.confirm) {
+          // 用户确认退出
+          // 清除本地存储
+          wx.removeStorageSync('token')
+          wx.removeStorageSync('userInfo')
+          
+          // 立即更新页面状态
+          this.setData({
+            isLoggedIn: false,        // 重置登录状态
+            userInfo: null,           // 清空用户信息
+            showSmsForm: false,      // 隐藏短信表单
+            showPasswordForm: false,   // 隐藏密码表单
+            smsPhone: '',            // 清空短信手机号
+            smsCode: '',             // 清空短信验证码
+            smsCodeSending: false,    // 清空发送状态
+            smsCodeText: '获取验证码', // 恢复按钮文本
+            smsLogging: false,        // 清空短信登录状态
+            passwordPhone: '',        // 清空密码手机号
+            password: '',            // 清空密码
+            showPassword: false,      // 重置密码显示状态
+            passwordLogging: false    // 清空密码登录状态
+          })
+          
+          // 显示退出成功提示
+          wx.showToast({
+            title: '已退出登录',
+            icon: 'success'
+          })
+        }
+      }
+    })
+  }
+})

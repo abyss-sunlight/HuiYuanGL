@@ -1,0 +1,129 @@
+package com.example.membersystem.consume.repo;
+
+import com.example.membersystem.consume.entity.ConsumeRecord;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
+
+/**
+ * 消费记录数据访问接口
+ */
+@Repository
+public interface ConsumeRecordRepository extends JpaRepository<ConsumeRecord, Long> {
+
+    /**
+     * 根据手机号查找记录
+     * 
+     * @param phone 手机号
+     * @return 消费记录列表
+     */
+    List<ConsumeRecord> findByPhoneOrderByConsumeDateDesc(String phone);
+
+    /**
+     * 根据姓氏查找记录
+     * 
+     * @param lastName 姓氏
+     * @return 消费记录列表
+     */
+    List<ConsumeRecord> findByLastNameOrderByConsumeDateDesc(String lastName);
+
+    /**
+     * 根据手机号和姓氏查找记录
+     * 
+     * @param phone 手机号
+     * @param lastName 姓氏
+     * @return 消费记录列表
+     */
+    List<ConsumeRecord> findByPhoneAndLastNameOrderByConsumeDateDesc(String phone, String lastName);
+
+    /**
+     * 根据日期范围查找记录
+     * 
+     * @param startDate 开始日期
+     * @param endDate 结束日期
+     * @return 消费记录列表
+     */
+    @Query("SELECT cr FROM ConsumeRecord cr WHERE cr.consumeDate BETWEEN :startDate AND :endDate ORDER BY cr.consumeDate DESC")
+    List<ConsumeRecord> findByDateRangeOrderByConsumeDateDesc(@Param("startDate") LocalDate startDate, 
+                                                            @Param("endDate") LocalDate endDate);
+
+    /**
+     * 根据手机号和日期范围查找记录
+     * 
+     * @param phone 手机号
+     * @param startDate 开始日期
+     * @param endDate 结束日期
+     * @return 消费记录列表
+     */
+    @Query("SELECT cr FROM ConsumeRecord cr WHERE cr.phone = :phone AND cr.consumeDate BETWEEN :startDate AND :endDate ORDER BY cr.consumeDate DESC")
+    List<ConsumeRecord> findByPhoneAndDateRangeOrderByConsumeDateDesc(@Param("phone") String phone,
+                                                                       @Param("startDate") LocalDate startDate,
+                                                                       @Param("endDate") LocalDate endDate);
+
+    /**
+     * 根据姓氏和日期范围查找记录
+     * 
+     * @param lastName 姓氏
+     * @param startDate 开始日期
+     * @param endDate 结束日期
+     * @return 消费记录列表
+     */
+    @Query("SELECT cr FROM ConsumeRecord cr WHERE cr.lastName = :lastName AND cr.consumeDate BETWEEN :startDate AND :endDate ORDER BY cr.consumeDate DESC")
+    List<ConsumeRecord> findByLastNameAndDateRangeOrderByConsumeDateDesc(@Param("lastName") String lastName,
+                                                                         @Param("startDate") LocalDate startDate,
+                                                                         @Param("endDate") LocalDate endDate);
+
+    /**
+     * 根据手机号、姓氏和日期范围查找记录
+     * 
+     * @param phone 手机号
+     * @param lastName 姓氏
+     * @param startDate 开始日期
+     * @param endDate 结束日期
+     * @return 消费记录列表
+     */
+    @Query("SELECT cr FROM ConsumeRecord cr WHERE cr.phone = :phone AND cr.lastName = :lastName AND cr.consumeDate BETWEEN :startDate AND :endDate ORDER BY cr.consumeDate DESC")
+    List<ConsumeRecord> findByPhoneAndLastNameAndDateRangeOrderByConsumeDateDesc(@Param("phone") String phone,
+                                                                               @Param("lastName") String lastName,
+                                                                               @Param("startDate") LocalDate startDate,
+                                                                               @Param("endDate") LocalDate endDate);
+
+    /**
+     * 根据消费类型查找记录
+     * 
+     * @param consumeType 消费类型
+     * @return 消费记录列表
+     */
+    List<ConsumeRecord> findByConsumeTypeOrderByConsumeDateDesc(String consumeType);
+
+    /**
+     * 统计会员总消费金额
+     * 
+     * @param phone 手机号
+     * @return 总消费金额
+     */
+    @Query("SELECT COALESCE(SUM(cr.consumeAmount), 0) FROM ConsumeRecord cr WHERE cr.phone = :phone AND cr.consumeType = '支出'")
+    BigDecimal sumConsumeAmountByPhone(@Param("phone") String phone);
+
+    /**
+     * 统计会员总充值金额
+     * 
+     * @param phone 手机号
+     * @return 总充值金额
+     */
+    @Query("SELECT COALESCE(SUM(cr.consumeAmount), 0) FROM ConsumeRecord cr WHERE cr.phone = :phone AND cr.consumeType = '充值'")
+    BigDecimal sumRechargeAmountByPhone(@Param("phone") String phone);
+
+    /**
+     * 查找最近的记录
+     * 
+     * @return 消费记录列表
+     */
+    @Query("SELECT cr FROM ConsumeRecord cr ORDER BY cr.consumeDate DESC, cr.createdAt DESC")
+    List<ConsumeRecord> findRecentRecords();
+}

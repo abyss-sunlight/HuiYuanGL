@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>充值折扣测试</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <h1>充值折扣管理测试</h1>
+    
+    <div>
+        <h2>问题检查清单：</h2>
+        <ul>
+            <li>✅ 页面已在 app.json 中注册</li>
+            <li>✅ 后端实体类使用 javax.persistence</li>
+            <li>✅ BigDecimal 舍入模式已修正</li>
+            <li>✅ 前端页面文件已创建</li>
+            <li>✅ 后端API已创建</li>
+            <li>✅ 数据库表结构已定义</li>
+        </ul>
+    </div>
+    
+    <div>
+        <h2>可能的问题：</h2>
+        <ol>
+            <li><strong>数据库表未创建</strong> - 需要执行 40_recharge_discount.sql</li>
+            <li><strong>后端服务未启动</strong> - 检查Spring Boot应用状态</li>
+            <li><strong>权限问题</strong> - 确保用户是店长权限（permissionLevel = 1）</li>
+            <li><strong>网络连接</strong> - 检查小程序是否正确连接到后端</li>
+            <li><strong>登录状态</strong> - 确保用户已登录并存储了用户信息</li>
+        </ol>
+    </div>
+    
+    <div>
+        <h2>调试步骤：</h2>
+        <ol>
+            <li>打开小程序开发者工具控制台</li>
+            <li>点击"充值折扣"按钮</li>
+            <li>查看控制台输出的调试信息</li>
+            <li>检查是否有错误信息</li>
+            <li>验证用户权限级别是否为1（店长）</li>
+        </ol>
+    </div>
+    
+    <div>
+        <h2>数据库执行命令：</h2>
+        <pre>
+-- 在MySQL中执行
+USE HuiYuanSql;
+SOURCE /path/to/40_recharge_discount.sql;
+
+-- 或者手动执行
+CREATE TABLE IF NOT EXISTS recharge_discount (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '折扣ID',
+  recharge_amount DECIMAL(10,2) NOT NULL COMMENT '充值金额',
+  discount_rate DECIMAL(5,4) NOT NULL COMMENT '折扣率（0.0000-1.0000）',
+  discount_percentage DECIMAL(5,2) NOT NULL COMMENT '折扣百分比（0.00-100.00）',
+  effective_date DATE NOT NULL COMMENT '生效日期',
+  is_active TINYINT(1) NOT NULL DEFAULT 1 COMMENT '是否启用：1-启用，0-禁用',
+  created_by VARCHAR(50) NOT NULL COMMENT '创建人',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
+) COMMENT='充值折扣表';
+        </pre>
+    </div>
+</body>
+</html>

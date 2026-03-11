@@ -1,0 +1,2 @@
+@import "./records-layout-base.wxss";
+@import "./records-layout-content.wxss";

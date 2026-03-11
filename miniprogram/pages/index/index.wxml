@@ -1,0 +1,59 @@
+<view class="container">
+  <view class="welcome-card">
+    <view class="welcome-title">欢迎使用</view>
+    <view class="welcome-subtitle">会员管理系统</view>
+    <view class="welcome-desc">高效管理会员信息，提供优质服务体验</view>
+  </view>
+
+  <view class="feature-grid">
+    <view class="feature-item" bindtap="goToRecords">
+      <view class="feature-icon">📋</view>
+      <view class="feature-title">会员记录</view>
+      <view class="feature-desc">查看和管理会员信息</view>
+    </view>
+
+    <view class="feature-item" wx:if="{{userInfo && userInfo.permissionLevel <= 2}}" bindtap="goToMembers">
+      <view class="feature-icon">👥</view>
+      <view class="feature-title">成员列表</view>
+      <view class="feature-desc">查看系统用户信息</view>
+    </view>
+
+    <view class="feature-item" wx:if="{{userInfo && userInfo.permissionLevel === 1}}" bindtap="goToDiscountManagement">
+      <view class="feature-icon">💰</view>
+      <view class="feature-title">充值折扣</view>
+      <view class="feature-desc">设置充值金额折扣</view>
+    </view>
+
+    <view class="feature-item" bindtap="goToProfile">
+      <view class="feature-icon">👤</view>
+      <view class="feature-title">个人中心</view>
+      <view class="feature-desc">登录和账户管理</view>
+    </view>
+  </view>
+
+  <view class="stats-card">
+    <view class="stats-title">系统统计</view>
+    <view class="stats-grid">
+      <view class="stats-item">
+        <view class="stats-number">{{stats.totalMembers || 0}}</view>
+        <view class="stats-label">会员总数</view>
+      </view>
+      <view class="stats-item">
+        <view class="stats-number">{{stats.todayNew || 0}}</view>
+        <view class="stats-label">今日新增</view>
+      </view>
+      <view class="stats-item">
+        <view class="stats-number">{{stats.activeUsers || 0}}</view>
+        <view class="stats-label">活跃用户</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="quick-actions">
+    <view class="action-title">快捷操作</view>
+    <button class="action-btn secondary" bindtap="viewReports">
+      <text class="btn-icon">📊</text>
+      <text class="btn-text">查看报表</text>
+    </button>
+  </view>
+</view>

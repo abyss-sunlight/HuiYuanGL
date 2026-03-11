@@ -1,0 +1,206 @@
+<view class="container">
+  <!-- 未登录状态 -->
+  <view class="empty-state" wx:if="{{!isLoggedIn}}">
+    <view class="empty-icon">👁️</view>
+    <view class="empty-title">请先登录</view>
+    <view class="empty-desc">登录后即可查看睫毛记录</view>
+    <button class="login-btn" bindtap="goToLogin">去登录</button>
+  </view>
+
+  <!-- 已登录状态 -->
+  <view class="content" wx:else>
+    <!-- 用户信息显示 -->
+    <view class="user-info" wx:if="{{userInfo}}">
+      <view class="user-avatar">
+        <image wx:if="{{userInfo.avatarUrl}}" src="{{userInfo.avatarUrl}}" class="avatar-img" />
+        <view wx:else class="avatar-placeholder">{{userInfo.username.charAt(0)}}</view>
+      </view>
+      <view class="user-details">
+        <view class="user-name">{{userInfo.username}}（{{userInfo.lastName}}{{userInfo.gender === 1 ? '男士' : '女士'}}）</view>
+        <view class="user-meta">
+          <view class="user-permission">{{userInfo.permissionName}}</view>
+          <view class="user-phone">{{userInfo.phone}}</view>
+        </view>
+        <!-- 会员专属信息 -->
+        <view wx:if="{{userInfo.permissionLevel === 3}}" class="member-info">
+          <view class="member-item">会员号：{{userInfo.memberNo || '未设置'}}</view>
+          <view class="member-item">余额：¥{{userInfo.amount || '0.00'}}</view>
+          <view class="member-item">折扣：{{userInfo.discount ? (userInfo.discount * 10) + '折' : '无折扣'}}</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 记录类型切换 - 会员及以上权限可见 -->
+    <view class="record-type-tabs" wx:if="{{userInfo.permissionLevel <= 3}}">
+      <view class="tab-item {{currentTab === 'eyelash' ? 'active' : ''}}" bindtap="switchTab" data-tab="eyelash">
+        <text class="tab-text">睫毛记录</text>
+      </view>
+      <view class="tab-item {{currentTab === 'consume' ? 'active' : ''}}" bindtap="switchTab" data-tab="consume">
+        <text class="tab-text">消费记录</text>
+      </view>
+    </view>
+
+    <!-- 睫毛记录内容区域 -->
+    <view class="records-header" wx:if="{{currentTab === 'eyelash'}}">
+      <view class="header-title">睫毛记录</view>
+      <view class="header-desc">{{statusText}}</view>
+      <view class="header-buttons {{userInfo.permissionLevel > 2 ? 'single-button' : ''}}">
+        <button class="add-btn" wx:if="{{userInfo.permissionLevel <= 2}}" bindtap="showAddRecordModal">添加记录</button>
+        <button class="refresh-btn" bindtap="refreshEyelashRecords">刷新</button>
+      </view>
+    </view>
+
+    <!-- 会员消费记录内容区域 -->
+    <view class="records-header" wx:if="{{currentTab === 'consume'}}">
+      <view class="header-title">会员消费记录</view>
+      <view class="header-desc">{{consumeStatusText}}</view>
+      <view class="header-buttons single-button">
+        <button class="refresh-btn" bindtap="refreshConsumeRecords">刷新</button>
+      </view>
+    </view>
+    <!-- 搜索区域 - 根据当前标签页显示 -->
+    <view class="filters" wx:if="{{currentTab === 'eyelash' || currentTab === 'consume'}}">
+      <!-- 手机号搜索 - 仅员工及以上权限 -->
+      <view class="filter-row" wx:if="{{userInfo.permissionLevel <= 2}}">
+        <input class="input" placeholder="手机号（支持模糊）" value="{{searchPhone}}" bindinput="onSearchPhoneInput" />
+      </view>
+      
+      <!-- 姓氏搜索 - 仅员工及以上权限 -->
+      <view class="filter-row" wx:if="{{userInfo.permissionLevel <= 2}}">
+        <input class="input" placeholder="姓（支持模糊）" value="{{searchLastName}}" bindinput="onSearchLastNameInput" />
+      </view>
+      
+      <!-- 日期范围搜索 - 游客及以上权限可以使用 -->
+      <view class="filter-row" wx:if="{{userInfo.permissionLevel <= 4}}">
+        <picker mode="date" value="{{startDate}}" bindchange="onStartDateChange">
+          <view class="picker">开始日期：{{startDate || '选择开始日期'}}</view>
+        </picker>
+      </view>
+      
+      <view class="filter-row" wx:if="{{userInfo.permissionLevel <= 4}}">
+        <picker mode="date" value="{{endDate}}" bindchange="onEndDateChange">
+          <view class="picker">结束日期：{{endDate || '选择结束日期'}}</view>
+        </picker>
+      </view>
+      
+      <!-- 搜索按钮组 -->
+      <view class="btn-row">
+        <button class="btn secondary" bindtap="clearSearchConditions">重置</button>
+        <button class="btn primary" bindtap="{{currentTab === 'eyelash' ? 'searchRecords' : 'searchConsumeRecords'}}">查询</button>
+      </view>
+    </view>
+
+    <!-- 状态显示 -->
+    <view class="status" wx:if="{{currentTab === 'eyelash' && statusText}}">{{statusText}}</view>
+    <view class="status" wx:if="{{currentTab === 'consume' && consumeStatusText}}">{{consumeStatusText}}</view>
+
+    <!-- 睫毛记录列表 -->
+    <view class="list" wx:if="{{currentTab === 'eyelash' && records.length > 0}}">
+      <view class="card" wx:for="{{records}}" wx:key="id">
+        <view class="top">
+          <view class="name">{{item.lastName}}（{{item.gender === 1 ? '男士' : '女士'}}）</view>
+          <view class="tag">睫毛记录</view>
+        </view>
+        <view class="line">手机号：{{item.phone}}</view>
+        <view class="line">款式：{{item.style}}</view>
+        <view class="line">型号：{{item.modelNumber}}</view>
+        <view class="line">长度：{{item.length}}mm</view>
+        <view class="line">翘度：{{item.curl}}</view>
+        <view class="line">记录日期：{{item.recordDate}}</view>
+        
+        <view class="actions" wx:if="{{userInfo.permissionLevel <= 2}}">
+          <view class="btn-column">
+            <button class="btn primary" bindtap="jumpToMember" data-last-name="{{item.lastName}}" data-phone="{{item.phone}}">跳转</button>
+            <button class="btn danger" bindtap="showDeleteRecordModal" data-record="{{item}}" data-type="eyelash">删除</button>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 会员消费记录列表 -->
+    <view class="list" wx:if="{{currentTab === 'consume' && consumeRecords.length > 0}}">
+      <view class="card" wx:for="{{consumeRecords}}" wx:key="id">
+        <view class="top">
+          <view class="name">{{item.lastName}}（{{item.gender === 1 ? '男士' : '女士'}}）</view>
+          <view class="tag">消费记录</view>
+        </view>
+        <view class="line">手机号：{{item.phone}}</view>
+        <view class="line">消费项目：{{item.consumeItem}}</view>
+        <view class="line">余额：¥{{item.balance}}</view>
+        <view class="line">消费金额：¥{{item.consumeAmount}}</view>
+        <view class="line">消费类型：{{item.consumeType}}</view>
+        <view class="line">消费日期：{{item.consumeDate}}</view>
+        
+        <view class="actions" wx:if="{{userInfo.permissionLevel <= 2}}">
+          <view class="btn-column">
+            <button class="btn primary" bindtap="jumpToMember" data-last-name="{{item.lastName}}" data-phone="{{item.phone}}">跳转</button>
+            <button class="btn danger" bindtap="showDeleteRecordModal" data-record="{{item}}" data-type="consume">删除</button>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 空状态显示 -->
+    <view class="empty" wx:if="{{currentTab === 'eyelash' && records.length === 0 && !statusText.includes('中')}}">
+      <view class="empty-text">暂无睫毛记录</view>
+    </view>
+    
+    <view class="empty" wx:if="{{currentTab === 'consume' && consumeRecords.length === 0 && !consumeStatusText.includes('中')}}">
+      <view class="empty-text">暂无消费记录</view>
+    </view>
+  </view>
+
+  <!-- 删除确认弹窗 -->
+  <view class="modal-overlay" wx:if="{{showDeleteModal}}" bindtap="hideDeleteModal">
+    <view class="modal-content" catchtap="stopPropagation">
+      <view class="modal-header">
+        <text class="modal-title">确认删除</text>
+        <text class="modal-close" bindtap="hideDeleteModal">×</text>
+      </view>
+      
+      <view class="modal-body">
+        <view class="delete-warning">
+          <text class="warning-icon">⚠️</text>
+          <text class="warning-text">确定要删除这条记录吗？</text>
+        </view>
+        
+        <view class="record-info" wx:if="{{deleteRecord}}">
+          <view class="info-item">
+            <text class="info-label">类型:</text>
+            <text class="info-value">{{deleteRecord.type === 'eyelash' ? '睫毛记录' : '消费记录'}}</text>
+          </view>
+          <view class="info-item">
+            <text class="info-label">客户:</text>
+            <text class="info-value">{{deleteRecord.lastName}}女士 ({{deleteRecord.phone}})</text>
+          </view>
+          <view class="info-item">
+            <text class="info-label">日期:</text>
+            <text class="info-value">{{deleteRecord.recordDate || deleteRecord.consumeDate}}</text>
+          </view>
+          <view class="info-item" wx:if="{{deleteRecord.type === 'eyelash'}}">
+            <text class="info-label">款式:</text>
+            <text class="info-value">{{deleteRecord.style}} - {{deleteRecord.modelNumber}}</text>
+          </view>
+          <view class="info-item" wx:if="{{deleteRecord.type === 'consume'}}">
+            <text class="info-label">项目:</text>
+            <text class="info-value">{{deleteRecord.consumeItem}} ({{deleteRecord.consumeType}})</text>
+          </view>
+        </view>
+        
+        <view class="delete-notice">
+          <text class="notice-text">此操作不可恢复，请谨慎操作！</text>
+        </view>
+      </view>
+      
+      <view class="modal-footer">
+        <button class="modal-btn cancel-btn" bindtap="hideDeleteModal">取消</button>
+        <button class="modal-btn delete-confirm-btn" bindtap="confirmDelete">确认删除</button>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 回到顶部浮窗按钮 -->
+  <view class="back-to-top" wx:if="{{showBackToTop}}" bindtap="scrollToTop">
+    <text class="back-to-top-icon">↑</text>
+  </view>
+</view>

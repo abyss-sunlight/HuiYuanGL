@@ -1,0 +1,223 @@
+/* profile 页面样式（下半部分：用户区 + 响应式） */
+
+/* 用户区域样式 */
+.user-section {
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.user-card {
+  background: white;
+  border-radius: 20rpx;
+  padding: 40rpx;
+  margin-bottom: 30rpx;
+  display: flex;
+  align-items: flex-start;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+  box-sizing: border-box;
+}
+
+.user-avatar {
+  margin-right: 30rpx;
+  flex-shrink: 0;
+}
+
+.avatar-img {
+  width: 90rpx;
+  height: 90rpx;
+  border-radius: 50%;
+}
+
+.avatar-placeholder {
+  width: 90rpx;
+  height: 90rpx;
+  border-radius: 50%;
+  background: #4a90e2;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36rpx;
+  font-weight: bold;
+}
+
+.user-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.user-name {
+  font-size: 34rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 16rpx;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  margin-bottom: 16rpx;
+}
+
+.user-permission {
+  font-size: 26rpx;
+  color: #4a90e2;
+}
+
+.user-phone {
+  font-size: 26rpx;
+  color: #666;
+}
+
+/* 会员专属信息样式 */
+.member-info {
+  margin-top: 20rpx;
+  padding-top: 20rpx;
+  border-top: 1rpx solid #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.member-item {
+  font-size: 26rpx;
+  color: #ff6b35;
+  line-height: 1.4;
+}
+
+.menu-list {
+  background: white;
+  border-radius: 20rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 30rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+  transition: background-color 0.2s;
+  box-sizing: border-box;
+}
+
+.menu-item:last-child {
+  border-bottom: none;
+}
+
+.menu-item:active {
+  background-color: #f8f8f8;
+}
+
+.menu-icon {
+  font-size: 36rpx;
+  margin-right: 25rpx;
+  width: 36rpx;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.menu-title {
+  flex: 1;
+  font-size: 30rpx;
+  color: #333;
+}
+
+.menu-arrow {
+  font-size: 26rpx;
+  color: #999;
+  flex-shrink: 0;
+}
+
+.logout-btn {
+  width: 100%;
+  height: 80rpx;
+  background: #ff4757;
+  color: white;
+  border-radius: 12rpx;
+  font-size: 30rpx;
+  font-weight: bold;
+  border: none;
+  box-sizing: border-box;
+}
+
+.get-phone-btn {
+  width: 100%;
+  height: 88rpx;
+  background: #07c160;
+  color: white;
+  border-radius: 12rpx;
+  font-size: 30rpx;
+  font-weight: bold;
+  margin-bottom: 20rpx;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.get-phone-btn:active {
+  background: #06a040;
+}
+
+/* 响应式适配 */
+@media (max-width: 750rpx) {
+  .container {
+    padding: 30rpx;
+  }
+
+  .login-section {
+    margin: -30rpx;
+    padding: 30rpx;
+  }
+
+  .login-header {
+    padding: 40rpx 0 30rpx;
+  }
+
+  .login-title {
+    font-size: 42rpx;
+  }
+
+  .method-item {
+    padding: 25rpx;
+  }
+
+  .icon {
+    width: 60rpx;
+    height: 60rpx;
+    font-size: 32rpx;
+    margin-right: 20rpx;
+  }
+
+  .method-name {
+    font-size: 28rpx;
+  }
+
+  .method-desc {
+    font-size: 20rpx;
+  }
+}
+
+@media (min-width: 750rpx) {
+  .login-methods {
+    max-width: 600rpx;
+    margin: 0 auto 40rpx;
+  }
+
+  .login-form {
+    max-width: 500rpx;
+    margin: 0 auto 40rpx;
+  }
+
+  .test-accounts {
+    max-width: 500rpx;
+    margin: 0 auto 40rpx;
+  }
+}

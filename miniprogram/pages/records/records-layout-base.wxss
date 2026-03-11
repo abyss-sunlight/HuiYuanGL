@@ -1,0 +1,281 @@
+/* records 页面：布局/列表/搜索等基础样式（上半部分） */
+
+.container {
+  padding: 40rpx;
+  background: #f7f7f7;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* 空白状态样式 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  text-align: center;
+}
+
+.empty-icon {
+  font-size: 120rpx;
+  margin-bottom: 40rpx;
+  opacity: 0.6;
+}
+
+.empty-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+}
+
+.empty-desc {
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 60rpx;
+  line-height: 1.4;
+}
+
+.login-btn {
+  background: #4a90e2;
+  color: white;
+  border-radius: 12rpx;
+  font-size: 30rpx;
+  padding: 20rpx 60rpx;
+  border: none;
+}
+
+.login-btn:active {
+  background: #3a7bc8;
+}
+
+/* 内容区域样式 */
+.content {
+  min-height: 100vh;
+}
+
+.user-info {
+  display: flex;
+  align-items: flex-start;
+  background: white;
+  padding: 40rpx;
+  margin-bottom: 30rpx;
+  border-radius: 20rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+}
+
+.user-avatar {
+  margin-right: 30rpx;
+  flex-shrink: 0;
+}
+
+.avatar-img {
+  width: 90rpx;
+  height: 90rpx;
+  border-radius: 50%;
+}
+
+.avatar-placeholder {
+  width: 90rpx;
+  height: 90rpx;
+  border-radius: 50%;
+  background: #4a90e2;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36rpx;
+  font-weight: bold;
+}
+
+.user-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.user-name {
+  font-size: 34rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 16rpx;
+  line-height: 1.3;
+}
+
+.user-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  margin-bottom: 16rpx;
+}
+
+.user-permission {
+  font-size: 26rpx;
+  color: #4a90e2;
+}
+
+.user-phone {
+  font-size: 26rpx;
+  color: #666;
+}
+
+/* 会员专属信息样式 */
+.member-info {
+  margin-top: 20rpx;
+  padding-top: 20rpx;
+  border-top: 1rpx solid #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.member-item {
+  font-size: 26rpx;
+  color: #ff6b35;
+  line-height: 1.4;
+}
+
+/* 记录头部样式 */
+.records-header {
+  background: white;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+  border-radius: 16rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.1);
+}
+
+.header-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10rpx;
+}
+
+.header-desc {
+  font-size: 24rpx;
+  color: #666;
+  margin-bottom: 20rpx;
+}
+
+.refresh-btn {
+  background: #4a90e2;
+  color: white;
+  border-radius: 8rpx;
+  font-size: 26rpx;
+  padding: 12rpx 20rpx;
+  border: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.header-buttons {
+  display: flex;
+  flex-direction: row;
+  gap: 20rpx;
+  align-items: stretch;
+}
+
+/* 当只有刷新按钮时，占满宽度 */
+.header-buttons.single-button .refresh-btn {
+  flex: 1;
+}
+
+/* 当两个按钮都显示时，宽度相同 */
+.header-buttons .add-btn,
+.header-buttons .refresh-btn {
+  flex: 1;
+}
+
+.add-btn {
+  background: #07c160;
+  color: white;
+  border-radius: 8rpx;
+  font-size: 26rpx;
+  padding: 12rpx 20rpx;
+  border: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.add-btn:active {
+  background: #06ad56;
+}
+
+/* 记录类型标签页样式 */
+.record-type-tabs {
+  display: flex;
+  margin: 20rpx;
+  background: #fff;
+  border-radius: 12rpx;
+  overflow: hidden;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+.tab-item {
+  flex: 1;
+  padding: 24rpx 0;
+  text-align: center;
+  background: #f8f9fa;
+  border: none;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.tab-item.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+}
+
+.tab-item.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60rpx;
+  height: 4rpx;
+  background: #fff;
+  border-radius: 2rpx;
+}
+
+.tab-text {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: inherit;
+}
+
+.tab-item:not(.active) .tab-text {
+  color: #666;
+}
+
+.tab-item.active .tab-text {
+  color: #fff;
+}
+
+/* 搜索区域样式 */
+.search-section {
+  background: white;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+  border-radius: 16rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.1);
+}
+
+.search-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.search-item:last-child {
+  margin-bottom: 0;
+}
+
+.search-input {
+  flex: 1;
+  height: 70rpx;
+  border: 2rpx solid #e0e0e0;
+  border-radius: 8rpx;
+  padding: 0 20rpx;
+  font-size: 28rpx;
+}

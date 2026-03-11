@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "成员列表",
+  "navigationBarBackgroundColor": "#4a90e2",
+  "navigationBarTextStyle": "white",
+  "backgroundColor": "#f7f7f7",
+  "enablePullDownRefresh": false
+}

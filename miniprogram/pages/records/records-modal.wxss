@@ -88,6 +88,8 @@
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  padding: 40rpx 20rpx;
+  box-sizing: border-box;
 }
 
 .modal-content {
@@ -95,8 +97,10 @@
   border-radius: 16rpx;
   width: 90%;
   max-width: 600rpx;
-  max-height: 80vh;
+  max-height: 85vh;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .modal-header {
@@ -127,8 +131,9 @@
 
 .modal-body {
   padding: 30rpx;
-  max-height: 60vh;
+  flex: 1;
   overflow-y: auto;
+  min-height: 0;
 }
 
 .modal-footer {
@@ -136,6 +141,8 @@
   gap: 20rpx;
   padding: 30rpx;
   border-top: 1rpx solid #f0f0f0;
+  flex-shrink: 0;
+  background: #fff;
 }
 
 .modal-btn {
@@ -225,4 +232,74 @@
 .notice-text {
   font-size: 24rpx;
   color: #721c24;
+}
+
+/* 睫毛记录表单样式 */
+.form-group {
+  margin-bottom: 30rpx;
+}
+
+.form-label {
+  display: block;
+  font-size: 28rpx;
+  color: #333;
+  margin-bottom: 10rpx;
+  font-weight: bold;
+}
+
+.form-input {
+  width: 100%;
+  height: 80rpx;
+  border: 2rpx solid #e0e0e0;
+  border-radius: 8rpx;
+  padding: 0 20rpx;
+  font-size: 28rpx;
+  color: #333;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  border-color: #4a90e2;
+  outline: none;
+}
+
+.form-input.readonly {
+  background: #f5f5f5;
+  color: #666;
+  border-color: #e0e0e0;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.form-input.readonly::after {
+  content: "🔒";
+  position: absolute;
+  right: 20rpx;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 24rpx;
+  color: #999;
+}
+
+.confirm-btn {
+  background: #07c160 !important;
+  color: white !important;
+}
+
+.confirm-btn:active {
+  background: #06ad56 !important;
+}
+
+/* 选择器样式 */
+.picker-text {
+  width: 100%;
+  height: 80rpx;
+  line-height: 80rpx;
+  padding: 0 20rpx;
+  font-size: 28rpx;
+  color: #333;
+  background: #fff;
+  box-sizing: border-box;
 }

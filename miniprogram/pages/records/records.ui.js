@@ -7,11 +7,21 @@ module.exports = {
       return
     }
 
-    // 显示提示信息，添加功能已移除
-    wx.showToast({
-      title: '添加睫毛记录功能已移除',
-      icon: 'none',
-      duration: 2000
+    // 显示添加睫毛记录模态弹窗
+    this.setData({
+      showEyelashModal: true,
+      isEdit: false,
+      currentEditId: null,
+      isFromMember: false,
+      eyelashForm: {
+        phone: '',
+        lastName: '',
+        style: '',
+        modelNumber: '',
+        length: '',
+        curl: '',
+        recordDate: this.getCurrentDate()
+      }
     })
   },
 
@@ -153,5 +163,286 @@ module.exports = {
       scrollTop: 0,
       duration: 300
     })
+  },
+
+  // 睫毛记录模态弹窗相关方法
+  hideEyelashModal() {
+    this.setData({
+      showEyelashModal: false,
+      isFromMember: false
+    })
+  },
+
+  // 从成员列表添加睫毛记录
+  showAddEyelashFromMember(memberInfo) {
+    if (this.data.userInfo.permissionLevel > 2) {
+      wx.showToast({ title: '权限不足', icon: 'none' })
+      return
+    }
+
+    // 预填会员信息
+    this.setData({
+      showEyelashModal: true,
+      isEdit: false,
+      currentEditId: null,
+      isFromMember: true,
+      eyelashForm: {
+        phone: memberInfo.phone || '',
+        lastName: memberInfo.lastName || '',
+        style: '',
+        modelNumber: '',
+        length: '',
+        curl: '',
+        recordDate: this.getCurrentDate()
+      }
+    })
+  },
+
+  // 睫毛记录表单输入事件
+  onEyelashPhoneInput(e) {
+    this.setData({ 'eyelashForm.phone': e.detail.value })
+  },
+
+  onEyelashLastNameInput(e) {
+    this.setData({ 'eyelashForm.lastName': e.detail.value })
+  },
+
+  onEyelashStyleInput(e) {
+    this.setData({ 'eyelashForm.style': e.detail.value })
+  },
+
+  onEyelashModelNumberInput(e) {
+    this.setData({ 'eyelashForm.modelNumber': e.detail.value })
+  },
+
+  onEyelashLengthInput(e) {
+    this.setData({ 'eyelashForm.length': e.detail.value })
+  },
+
+  onEyelashCurlInput(e) {
+    this.setData({ 'eyelashForm.curl': e.detail.value })
+  },
+
+  // 提交睫毛记录表单
+  async submitEyelashForm() {
+    const { eyelashForm, isEdit, currentEditId } = this.data
+
+    // 表单验证
+    if (!eyelashForm.phone || !eyelashForm.lastName || !eyelashForm.style || 
+        !eyelashForm.modelNumber || !eyelashForm.length || !eyelashForm.curl) {
+      wx.showToast({
+        title: '请填写完整信息',
+        icon: 'none'
+      })
+      return
+    }
+
+    // 手机号格式验证
+    if (!/^1[3-9]\d{9}$/.test(eyelashForm.phone)) {
+      wx.showToast({
+        title: '手机号格式不正确',
+        icon: 'none'
+      })
+      return
+    }
+
+    try {
+      const data = {
+        phone: eyelashForm.phone,
+        lastName: eyelashForm.lastName,
+        gender: 1, // 默认性别，可以根据需要修改
+        style: eyelashForm.style,
+        modelNumber: eyelashForm.modelNumber,
+        length: parseFloat(eyelashForm.length),
+        curl: eyelashForm.curl,
+        recordDate: eyelashForm.recordDate
+      }
+
+      if (isEdit) {
+        // 更新记录
+        await request({
+          url: `/api/eyelash-records/${currentEditId}`,
+          method: 'PUT',
+          data
+        })
+        
+        wx.showToast({
+          title: '更新成功',
+          icon: 'success'
+        })
+      } else {
+        // 添加记录
+        await request({
+          url: '/api/eyelash-records',
+          method: 'POST',
+          data
+        })
+        
+        wx.showToast({
+          title: '添加成功',
+          icon: 'success'
+        })
+      }
+      
+      this.hideEyelashModal()
+      // 重新加载睫毛记录
+      this.loadRecords()
+    } catch (error) {
+      console.error('提交失败:', error)
+      wx.showToast({
+        title: isEdit ? '更新失败' : '添加失败',
+        icon: 'none'
+      })
+    }
+  },
+
+  // 获取当前日期
+  getCurrentDate() {
+    const now = new Date()
+    const year = now.getFullYear()
+    const month = String(now.getMonth() + 1).padStart(2, '0')
+    const day = String(now.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  },
+
+  // 消费记录模态弹窗相关方法
+  hideConsumeModal() {
+    this.setData({
+      showConsumeModal: false
+    })
+  },
+
+  // 显示游客充值弹窗
+  showRechargeModal(memberInfo) {
+    if (this.data.userInfo.permissionLevel > 2) {
+      wx.showToast({ title: '权限不足', icon: 'none' })
+      return
+    }
+
+    this.setData({
+      showConsumeModal: true,
+      consumeType: 'recharge',
+      consumeItemIndex: 0,
+      consumeForm: {
+        phone: memberInfo.phone || '',
+        lastName: memberInfo.lastName || '',
+        balance: 0,
+        consumeAmount: '',
+        consumeItem: '会员充值',
+        consumeType: '充值',
+        consumeDate: this.getCurrentDate()
+      }
+    })
+  },
+
+  // 显示会员消费/充值弹窗
+  showConsumeModal(memberInfo) {
+    if (this.data.userInfo.permissionLevel > 2) {
+      wx.showToast({ title: '权限不足', icon: 'none' })
+      return
+    }
+
+    this.setData({
+      showConsumeModal: true,
+      consumeType: 'consume',
+      consumeItemIndex: 0,
+      consumeTypeIndex: 1, // 默认选择"支出"
+      consumeForm: {
+        phone: memberInfo.phone || '',
+        lastName: memberInfo.lastName || '',
+        balance: memberInfo.balance || 0,
+        consumeAmount: '',
+        consumeItem: '',
+        consumeType: '支出',
+        consumeDate: this.getCurrentDate()
+      }
+    })
+  },
+
+  // 消费金额输入
+  onConsumeAmountInput(e) {
+    this.setData({ 'consumeForm.consumeAmount': e.detail.value })
+  },
+
+  // 消费项目选择
+  onConsumeItemChange(e) {
+    const index = e.detail.value
+    this.setData({ 
+      consumeItemIndex: index,
+      'consumeForm.consumeItem': this.data.consumeItems[index]
+    })
+  },
+
+  // 消费类型选择
+  onConsumeTypeChange(e) {
+    const index = e.detail.value
+    this.setData({ 
+      consumeTypeIndex: index,
+      'consumeForm.consumeType': this.data.consumeTypes[index]
+    })
+  },
+
+  // 提交消费记录表单
+  async submitConsumeForm() {
+    const { consumeForm, consumeType } = this.data
+
+    // 表单验证
+    if (!consumeForm.consumeAmount) {
+      wx.showToast({
+        title: '请输入金额',
+        icon: 'none'
+      })
+      return
+    }
+
+    if (consumeType === 'consume' && !consumeForm.consumeItem) {
+      wx.showToast({
+        title: '请选择消费项目',
+        icon: 'none'
+      })
+      return
+    }
+
+    if (consumeType === 'consume' && !consumeForm.consumeType) {
+      wx.showToast({
+        title: '请选择消费类型',
+        icon: 'none'
+      })
+      return
+    }
+
+    try {
+      const data = {
+        phone: consumeForm.phone,
+        lastName: consumeForm.lastName,
+        gender: 1, // 默认性别
+        balance: parseFloat(consumeForm.balance),
+        consumeAmount: parseFloat(consumeForm.consumeAmount),
+        consumeItem: consumeForm.consumeItem,
+        consumeType: consumeForm.consumeType,
+        consumeDate: consumeForm.consumeDate
+      }
+
+      await request({
+        url: '/api/consume-records',
+        method: 'POST',
+        data
+      })
+      
+      wx.showToast({
+        title: consumeType === 'recharge' ? '充值成功' : '消费记录添加成功',
+        icon: 'success'
+      })
+      
+      this.hideConsumeModal()
+      // 重新加载消费记录
+      this.loadConsumeRecords()
+    } catch (error) {
+      console.error('提交失败:', error)
+      wx.showToast({
+        title: consumeType === 'recharge' ? '充值失败' : '消费记录添加失败',
+        icon: 'none'
+      })
+    }
   }
 }

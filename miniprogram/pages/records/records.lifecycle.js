@@ -27,6 +27,56 @@ module.exports = {
 
   onShow() {
     this.checkLoginStatus()
+    
+    // 检查是否有从成员列表传递过来的用户信息
+    const app = getApp()
+    if (app.globalData && app.globalData.memberForEyelash) {
+      const memberInfo = app.globalData.memberForEyelash
+      
+      // 显示添加睫毛记录弹窗并预填信息
+      if (this.showAddEyelashFromMember) {
+        this.showAddEyelashFromMember({
+          phone: memberInfo.phone,
+          lastName: memberInfo.lastName
+        })
+      }
+      
+      // 清除全局数据
+      app.globalData.memberForEyelash = null
+    }
+    
+    // 检查充值记录
+    if (app.globalData && app.globalData.memberForRecharge) {
+      const memberInfo = app.globalData.memberForRecharge
+      
+      // 显示充值弹窗并预填信息
+      if (this.showRechargeModal) {
+        this.showRechargeModal({
+          phone: memberInfo.phone,
+          lastName: memberInfo.lastName
+        })
+      }
+      
+      // 清除全局数据
+      app.globalData.memberForRecharge = null
+    }
+    
+    // 检查消费记录
+    if (app.globalData && app.globalData.memberForConsume) {
+      const memberInfo = app.globalData.memberForConsume
+      
+      // 显示消费弹窗并预填信息
+      if (this.showConsumeModal) {
+        this.showConsumeModal({
+          phone: memberInfo.phone,
+          lastName: memberInfo.lastName,
+          balance: memberInfo.balance
+        })
+      }
+      
+      // 清除全局数据
+      app.globalData.memberForConsume = null
+    }
   },
 
   checkLoginStatus() {

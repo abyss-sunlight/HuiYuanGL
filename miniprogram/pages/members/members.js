@@ -105,50 +105,99 @@ Page({
   // 添加美睫记录
   addEyelashRecord(e) {
     const user = e.currentTarget.dataset.user
-    // 直接跳转到添加睫毛记录页面并传递用户信息
-    const params = []
-    params.push(`userId=${user.userId}`)
-    params.push(`lastName=${encodeURIComponent(user.lastName)}`)
-    params.push(`phone=${encodeURIComponent(user.phone)}`)
-    params.push('readonly=true')
     
-    wx.navigateTo({
-      url: `/pages/add-eyelash-record/add-eyelash-record?${params.join('&')}`
+    // 存储用户信息到全局数据，供records页面使用
+    const app = getApp()
+    app.globalData.memberForEyelash = {
+      phone: user.phone,
+      lastName: user.lastName,
+      userId: user.userId
+    }
+    
+    // 跳转到records页面，并设置参数
+    wx.switchTab({
+      url: '/pages/records/records',
+      success: () => {
+        // 延迟执行，确保页面已加载
+        setTimeout(() => {
+          // 通过事件通知records页面显示添加弹窗
+          const pages = getCurrentPages()
+          const recordsPage = pages.find(page => page.route === 'pages/records/records')
+          if (recordsPage) {
+            recordsPage.showAddEyelashFromMember({
+              phone: user.phone,
+              lastName: user.lastName
+            })
+          }
+        }, 100)
+      }
     })
   },
 
   // 添加会员消费记录
   addConsumeRecord(e) {
     const user = e.currentTarget.dataset.user
-    // 直接跳转到添加消费记录页面并传递用户信息
-    const params = []
-    params.push(`userId=${user.userId}`)
-    params.push(`lastName=${encodeURIComponent(user.lastName)}`)
-    params.push(`phone=${encodeURIComponent(user.phone)}`)
-    params.push(`amount=${user.amount || 0}`)
-    params.push('readonly=true')
     
-    wx.navigateTo({
-      url: `/pages/add-consume-record/add-consume-record?${params.join('&')}`
+    // 存储用户信息到全局数据，供records页面使用
+    const app = getApp()
+    app.globalData.memberForConsume = {
+      phone: user.phone,
+      lastName: user.lastName,
+      balance: user.balance || 0,
+      userId: user.userId,
+      type: 'consume' // 标记为消费模式
+    }
+    
+    // 跳转到records页面
+    wx.switchTab({
+      url: '/pages/records/records',
+      success: () => {
+        // 延迟执行，确保页面已加载
+        setTimeout(() => {
+          const pages = getCurrentPages()
+          const recordsPage = pages.find(page => page.route === 'pages/records/records')
+          if (recordsPage) {
+            recordsPage.showConsumeModal({
+              phone: user.phone,
+              lastName: user.lastName,
+              balance: user.balance || 0
+            })
+          }
+        }, 100)
+      }
     })
   },
 
   // 添加充值记录
   addRechargeRecord(e) {
     const user = e.currentTarget.dataset.user
-    // 直接跳转到添加消费记录页面并传递用户信息和充值预设
-    const params = []
-    params.push(`userId=${user.userId}`)
-    params.push(`lastName=${encodeURIComponent(user.lastName)}`)
-    params.push(`phone=${encodeURIComponent(user.phone)}`)
-    params.push(`amount=0`) // 游客余额为0
-    params.push(`consumeItem=会员充值`)
-    params.push(`consumeType=充值`)
-    params.push(`readonly=true`)
-    params.push(`recharge=true`) // 标记为充值模式
     
-    wx.navigateTo({
-      url: `/pages/add-consume-record/add-consume-record?${params.join('&')}`
+    // 存储用户信息到全局数据，供records页面使用
+    const app = getApp()
+    app.globalData.memberForRecharge = {
+      phone: user.phone,
+      lastName: user.lastName,
+      balance: 0, // 游客余额为0
+      userId: user.userId,
+      type: 'recharge' // 标记为充值模式
+    }
+    
+    // 跳转到records页面
+    wx.switchTab({
+      url: '/pages/records/records',
+      success: () => {
+        // 延迟执行，确保页面已加载
+        setTimeout(() => {
+          const pages = getCurrentPages()
+          const recordsPage = pages.find(page => page.route === 'pages/records/records')
+          if (recordsPage) {
+            recordsPage.showRechargeModal({
+              phone: user.phone,
+              lastName: user.lastName
+            })
+          }
+        }, 100)
+      }
     })
   },
 

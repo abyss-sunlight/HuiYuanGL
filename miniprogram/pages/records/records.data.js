@@ -30,23 +30,6 @@ module.exports = {
       length: '',
       curl: '',
       recordDate: ''
-    },
-
-    // 消费记录模态弹窗相关数据
-    showConsumeModal: false,
-    consumeType: '', // 'recharge' 或 'consume'
-    consumeItemIndex: 0,
-    consumeTypeIndex: 0,
-    consumeItems: ['会员充值', '美睫项目', '美甲项目'],
-    consumeTypes: ['充值', '支出'],
-    consumeForm: {
-      phone: '',
-      lastName: '',
-      balance: 0,
-      consumeAmount: '',
-      consumeItem: '',
-      consumeType: '',
-      consumeDate: ''
     }
   }
 }

@@ -212,14 +212,14 @@
           <text class="form-label">手机号 *</text>
           <input wx:if="{{!isFromMember}}" class="form-input" type="number" placeholder="请输入手机号" 
                  value="{{eyelashForm.phone}}" bindinput="onEyelashPhoneInput" />
-          <view wx:else class="form-input readonly">{{eyelashForm.phone}}</view>
+          <text wx:else class="readonly-text">{{eyelashForm.phone}}</text>
         </view>
         
         <view class="form-group">
           <text class="form-label">姓氏 *</text>
           <input wx:if="{{!isFromMember}}" class="form-input" type="text" placeholder="请输入姓氏" 
                  value="{{eyelashForm.lastName}}" bindinput="onEyelashLastNameInput" />
-          <view wx:else class="form-input readonly">{{eyelashForm.lastName}}</view>
+          <text wx:else class="readonly-text">{{eyelashForm.lastName}}</text>
         </view>
         
         <view class="form-group">
@@ -248,82 +248,13 @@
         
         <view class="form-group">
           <text class="form-label">记录日期 *</text>
-          <view class="form-input readonly">{{eyelashForm.recordDate}}</view>
+          <text class="readonly-text">{{eyelashForm.recordDate}}</text>
         </view>
       </view>
       
       <view class="modal-footer">
         <button class="modal-btn cancel-btn" bindtap="hideEyelashModal">取消</button>
         <button class="modal-btn confirm-btn" bindtap="submitEyelashForm">确认添加</button>
-      </view>
-    </view>
-  </view>
-  
-  <!-- 消费记录模态弹窗 -->
-  <view class="modal-overlay" wx:if="{{showConsumeModal}}" bindtap="hideConsumeModal">
-    <view class="modal-content" catchtap="stopPropagation">
-      <view class="modal-header">
-        <text class="modal-title">{{consumeType === 'recharge' ? '会员充值' : '会员消费'}}</text>
-        <text class="modal-close" bindtap="hideConsumeModal">×</text>
-      </view>
-      
-      <view class="modal-body">
-        <view class="form-group">
-          <text class="form-label">手机号</text>
-          <view class="form-input readonly">{{consumeForm.phone}}</view>
-        </view>
-        
-        <view class="form-group">
-          <text class="form-label">姓氏</text>
-          <view class="form-input readonly">{{consumeForm.lastName}}</view>
-        </view>
-        
-        <view class="form-group">
-          <text class="form-label">余额</text>
-          <view class="form-input readonly">¥{{consumeForm.balance}}</view>
-        </view>
-        
-        <view class="form-group">
-          <text class="form-label">{{consumeType === 'recharge' ? '充值金额' : '消费金额'}} *</text>
-          <input class="form-input" type="digit" placeholder="请输入金额" 
-                 value="{{consumeForm.consumeAmount}}" bindinput="onConsumeAmountInput" />
-        </view>
-        
-        <view class="form-group" wx:if="{{consumeType === 'consume'}}">
-          <text class="form-label">消费项目 *</text>
-          <picker class="form-input" mode="selector" range="{{consumeItems}}" 
-                  value="{{consumeItemIndex}}" bindchange="onConsumeItemChange">
-            <view class="picker-text">{{consumeItems[consumeItemIndex] || '请选择消费项目'}}</view>
-          </picker>
-        </view>
-        
-        <view class="form-group" wx:else>
-          <text class="form-label">消费项目</text>
-          <view class="form-input readonly">会员充值</view>
-        </view>
-        
-        <view class="form-group" wx:if="{{consumeType === 'consume'}}">
-          <text class="form-label">消费类型 *</text>
-          <picker class="form-input" mode="selector" range="{{consumeTypes}}" 
-                  value="{{consumeTypeIndex}}" bindchange="onConsumeTypeChange">
-            <view class="picker-text">{{consumeTypes[consumeTypeIndex] || '请选择消费类型'}}</view>
-          </picker>
-        </view>
-        
-        <view class="form-group" wx:else>
-          <text class="form-label">消费类型</text>
-          <view class="form-input readonly">充值</view>
-        </view>
-        
-        <view class="form-group">
-          <text class="form-label">日期</text>
-          <view class="form-input readonly">{{consumeForm.consumeDate}}</view>
-        </view>
-      </view>
-      
-      <view class="modal-footer">
-        <button class="modal-btn cancel-btn" bindtap="hideConsumeModal">取消</button>
-        <button class="modal-btn confirm-btn" bindtap="submitConsumeForm">确认{{consumeType === 'recharge' ? '充值' : '消费'}}</button>
       </view>
     </view>
   </view>

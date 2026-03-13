@@ -2,11 +2,16 @@ package com.example.membersystem.consume.service;
 
 import com.example.membersystem.consume.entity.ConsumeRecord;
 import com.example.membersystem.consume.repo.ConsumeRecordRepository;
+import com.example.membersystem.discount.entity.RechargeDiscount;
+import com.example.membersystem.discount.service.RechargeDiscountService;
+import com.example.membersystem.user.entity.User;
+import com.example.membersystem.user.repo.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -19,10 +24,16 @@ import java.util.Optional;
 public class ConsumeRecordService {
 
     private final ConsumeRecordRepository consumeRecordRepository;
+    private final UserRepository userRepository;
+    private final RechargeDiscountService rechargeDiscountService;
 
     @Autowired
-    public ConsumeRecordService(ConsumeRecordRepository consumeRecordRepository) {
+    public ConsumeRecordService(ConsumeRecordRepository consumeRecordRepository,
+                              UserRepository userRepository,
+                              RechargeDiscountService rechargeDiscountService) {
         this.consumeRecordRepository = consumeRecordRepository;
+        this.userRepository = userRepository;
+        this.rechargeDiscountService = rechargeDiscountService;
     }
 
     /**
@@ -33,7 +44,118 @@ public class ConsumeRecordService {
      */
     public ConsumeRecord createRecord(ConsumeRecord record) {
         validateRecord(record);
-        return consumeRecordRepository.save(record);
+        
+        // 查找用户
+        Optional<User> userOptional = userRepository.findByPhone(record.getPhone());
+        if (userOptional.isEmpty()) {
+            throw new IllegalArgumentException("用户不存在，手机号：" + record.getPhone());
+        }
+        
+        User user = userOptional.get();
+        
+        // 根据消费类型处理余额和折扣
+        if ("充值".equals(record.getConsumeType())) {
+            handleRecharge(user, record);
+        } else if ("支出".equals(record.getConsumeType())) {
+            handleConsume(user, record);
+        } else {
+            throw new IllegalArgumentException("不支持的消费类型：" + record.getConsumeType());
+        }
+        
+        // 保存消费记录
+        ConsumeRecord savedRecord = consumeRecordRepository.save(record);
+        
+        // 保存更新后的用户信息
+        userRepository.save(user);
+        
+        return savedRecord;
+    }
+    
+    /**
+     * 处理充值逻辑
+     * 
+     * @param user 用户信息
+     * @param record 消费记录
+     */
+    private void handleRecharge(User user, ConsumeRecord record) {
+        // 计算新的余额
+        BigDecimal newBalance = user.getAmount().add(record.getConsumeAmount());
+        
+        // 查找适用的充值折扣
+        Optional<RechargeDiscount> discountOptional = rechargeDiscountService
+            .findApplicableDiscount(record.getConsumeAmount());
+        
+        BigDecimal newDiscount = user.getDiscount(); // 默认保持原折扣
+        
+        if (discountOptional.isPresent()) {
+            RechargeDiscount discount = discountOptional.get();
+            // 只有当充值折扣更好时才更新（数值越小折扣越大）
+            // 例如：1.2折(0.12) > 3.5折(0.035)，所以3.5折更好
+            if (user.getDiscount() == null || discount.getDiscountRate().compareTo(user.getDiscount()) < 0) {
+                newDiscount = discount.getDiscountRate();
+            }
+        }
+        
+        // 游客充值后自动提升为会员
+        if (user.getPermissionLevel() != null && user.getPermissionLevel() == 4) {
+            user.setPermissionLevel(3); // 提升为会员
+            // 生成会员号
+            if (user.getMemberNo() == null || user.getMemberNo().trim().isEmpty()) {
+                user.setMemberNo(generateMemberNo());
+            }
+        }
+        
+        // 更新用户余额和折扣
+        user.setAmount(newBalance);
+        user.setDiscount(newDiscount);
+        
+        // 更新记录中的余额快照（充值后的余额）
+        record.setBalance(newBalance);
+    }
+    
+    /**
+     * 生成会员号
+     * 
+     * @return 会员号
+     */
+    private String generateMemberNo() {
+        // 获取当前时间戳
+        long timestamp = System.currentTimeMillis();
+        // 取后6位作为会员号后缀
+        String suffix = String.valueOf(timestamp).substring(String.valueOf(timestamp).length() - 6);
+        // 生成会员号：VIP + 6位数字
+        return "VIP" + suffix;
+    }
+    
+    /**
+     * 处理消费逻辑
+     * 
+     * @param user 用户信息
+     * @param record 消费记录
+     */
+    private void handleConsume(User user, ConsumeRecord record) {
+        // 计算折扣后的消费金额
+        BigDecimal discountedAmount = record.getConsumeAmount()
+            .multiply(user.getDiscount() != null ? user.getDiscount() : BigDecimal.ONE)
+            .setScale(2, RoundingMode.HALF_UP);
+        
+        // 计算新的余额
+        BigDecimal newBalance = user.getAmount().subtract(discountedAmount);
+        
+        // 检查余额是否足够
+        if (newBalance.compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("余额不足，当前余额：" + user.getAmount() + 
+                "，折扣后消费金额：" + discountedAmount);
+        }
+        
+        // 更新用户余额
+        user.setAmount(newBalance);
+        
+        // 更新记录中的余额快照（消费前的余额）
+        record.setBalance(user.getAmount());
+        
+        // 更新记录中的消费金额为折扣后的金额
+        record.setConsumeAmount(discountedAmount);
     }
 
     /**
@@ -54,7 +176,7 @@ public class ConsumeRecordService {
      */
     @Transactional(readOnly = true)
     public List<ConsumeRecord> findAll() {
-        return consumeRecordRepository.findAll();
+        return consumeRecordRepository.findAllByOrderByCreatedAtDesc();
     }
 
     /**
@@ -65,7 +187,7 @@ public class ConsumeRecordService {
      */
     @Transactional(readOnly = true)
     public List<ConsumeRecord> findByPhone(String phone) {
-        return consumeRecordRepository.findByPhoneOrderByConsumeDateDesc(phone);
+        return consumeRecordRepository.findByPhoneOrderByCreatedAtDesc(phone);
     }
 
     /**
@@ -76,7 +198,7 @@ public class ConsumeRecordService {
      */
     @Transactional(readOnly = true)
     public List<ConsumeRecord> findByLastName(String lastName) {
-        return consumeRecordRepository.findByLastNameOrderByConsumeDateDesc(lastName);
+        return consumeRecordRepository.findByLastNameOrderByCreatedAtDesc(lastName);
     }
 
     /**
@@ -88,7 +210,7 @@ public class ConsumeRecordService {
      */
     @Transactional(readOnly = true)
     public List<ConsumeRecord> findByPhoneAndLastName(String phone, String lastName) {
-        return consumeRecordRepository.findByPhoneAndLastNameOrderByConsumeDateDesc(phone, lastName);
+        return consumeRecordRepository.findByPhoneAndLastNameOrderByCreatedAtDesc(phone, lastName);
     }
 
     /**
@@ -100,7 +222,7 @@ public class ConsumeRecordService {
      */
     @Transactional(readOnly = true)
     public List<ConsumeRecord> findByDateRange(LocalDate startDate, LocalDate endDate) {
-        return consumeRecordRepository.findByDateRangeOrderByConsumeDateDesc(startDate, endDate);
+        return consumeRecordRepository.findByDateRangeOrderByCreatedAtDesc(startDate, endDate);
     }
 
     /**
@@ -113,7 +235,7 @@ public class ConsumeRecordService {
      */
     @Transactional(readOnly = true)
     public List<ConsumeRecord> findByPhoneAndDateRange(String phone, LocalDate startDate, LocalDate endDate) {
-        return consumeRecordRepository.findByPhoneAndDateRangeOrderByConsumeDateDesc(phone, startDate, endDate);
+        return consumeRecordRepository.findByPhoneAndDateRangeOrderByCreatedAtDesc(phone, startDate, endDate);
     }
 
     /**
@@ -126,7 +248,7 @@ public class ConsumeRecordService {
      */
     @Transactional(readOnly = true)
     public List<ConsumeRecord> findByLastNameAndDateRange(String lastName, LocalDate startDate, LocalDate endDate) {
-        return consumeRecordRepository.findByLastNameAndDateRangeOrderByConsumeDateDesc(lastName, startDate, endDate);
+        return consumeRecordRepository.findByLastNameAndDateRangeOrderByCreatedAtDesc(lastName, startDate, endDate);
     }
 
     /**
@@ -140,7 +262,7 @@ public class ConsumeRecordService {
      */
     @Transactional(readOnly = true)
     public List<ConsumeRecord> findByPhoneAndLastNameAndDateRange(String phone, String lastName, LocalDate startDate, LocalDate endDate) {
-        return consumeRecordRepository.findByPhoneAndLastNameAndDateRangeOrderByConsumeDateDesc(phone, lastName, startDate, endDate);
+        return consumeRecordRepository.findByPhoneAndLastNameAndDateRangeOrderByCreatedAtDesc(phone, lastName, startDate, endDate);
     }
 
     /**
@@ -151,7 +273,7 @@ public class ConsumeRecordService {
      */
     @Transactional(readOnly = true)
     public List<ConsumeRecord> findByConsumeType(String consumeType) {
-        return consumeRecordRepository.findByConsumeTypeOrderByConsumeDateDesc(consumeType);
+        return consumeRecordRepository.findByConsumeTypeOrderByCreatedAtDesc(consumeType);
     }
 
     /**

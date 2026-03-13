@@ -22,7 +22,8 @@ public interface ConsumeRecordRepository extends JpaRepository<ConsumeRecord, Lo
      * @param phone 手机号
      * @return 消费记录列表
      */
-    List<ConsumeRecord> findByPhoneOrderByConsumeDateDesc(String phone);
+    @Query("SELECT cr FROM ConsumeRecord cr WHERE cr.phone = :phone ORDER BY cr.createdAt DESC")
+    List<ConsumeRecord> findByPhoneOrderByCreatedAtDesc(@Param("phone") String phone);
 
     /**
      * 根据姓氏查找记录
@@ -30,7 +31,8 @@ public interface ConsumeRecordRepository extends JpaRepository<ConsumeRecord, Lo
      * @param lastName 姓氏
      * @return 消费记录列表
      */
-    List<ConsumeRecord> findByLastNameOrderByConsumeDateDesc(String lastName);
+    @Query("SELECT cr FROM ConsumeRecord cr WHERE cr.lastName = :lastName ORDER BY cr.createdAt DESC")
+    List<ConsumeRecord> findByLastNameOrderByCreatedAtDesc(@Param("lastName") String lastName);
 
     /**
      * 根据手机号和姓氏查找记录
@@ -39,7 +41,8 @@ public interface ConsumeRecordRepository extends JpaRepository<ConsumeRecord, Lo
      * @param lastName 姓氏
      * @return 消费记录列表
      */
-    List<ConsumeRecord> findByPhoneAndLastNameOrderByConsumeDateDesc(String phone, String lastName);
+    @Query("SELECT cr FROM ConsumeRecord cr WHERE cr.phone = :phone AND cr.lastName = :lastName ORDER BY cr.createdAt DESC")
+    List<ConsumeRecord> findByPhoneAndLastNameOrderByCreatedAtDesc(@Param("phone") String phone, @Param("lastName") String lastName);
 
     /**
      * 根据日期范围查找记录
@@ -48,8 +51,8 @@ public interface ConsumeRecordRepository extends JpaRepository<ConsumeRecord, Lo
      * @param endDate 结束日期
      * @return 消费记录列表
      */
-    @Query("SELECT cr FROM ConsumeRecord cr WHERE cr.consumeDate BETWEEN :startDate AND :endDate ORDER BY cr.consumeDate DESC")
-    List<ConsumeRecord> findByDateRangeOrderByConsumeDateDesc(@Param("startDate") LocalDate startDate, 
+    @Query("SELECT cr FROM ConsumeRecord cr WHERE cr.consumeDate BETWEEN :startDate AND :endDate ORDER BY cr.createdAt DESC")
+    List<ConsumeRecord> findByDateRangeOrderByCreatedAtDesc(@Param("startDate") LocalDate startDate, 
                                                             @Param("endDate") LocalDate endDate);
 
     /**
@@ -60,8 +63,8 @@ public interface ConsumeRecordRepository extends JpaRepository<ConsumeRecord, Lo
      * @param endDate 结束日期
      * @return 消费记录列表
      */
-    @Query("SELECT cr FROM ConsumeRecord cr WHERE cr.phone = :phone AND cr.consumeDate BETWEEN :startDate AND :endDate ORDER BY cr.consumeDate DESC")
-    List<ConsumeRecord> findByPhoneAndDateRangeOrderByConsumeDateDesc(@Param("phone") String phone,
+    @Query("SELECT cr FROM ConsumeRecord cr WHERE cr.phone = :phone AND cr.consumeDate BETWEEN :startDate AND :endDate ORDER BY cr.createdAt DESC")
+    List<ConsumeRecord> findByPhoneAndDateRangeOrderByCreatedAtDesc(@Param("phone") String phone,
                                                                        @Param("startDate") LocalDate startDate,
                                                                        @Param("endDate") LocalDate endDate);
 
@@ -73,8 +76,8 @@ public interface ConsumeRecordRepository extends JpaRepository<ConsumeRecord, Lo
      * @param endDate 结束日期
      * @return 消费记录列表
      */
-    @Query("SELECT cr FROM ConsumeRecord cr WHERE cr.lastName = :lastName AND cr.consumeDate BETWEEN :startDate AND :endDate ORDER BY cr.consumeDate DESC")
-    List<ConsumeRecord> findByLastNameAndDateRangeOrderByConsumeDateDesc(@Param("lastName") String lastName,
+    @Query("SELECT cr FROM ConsumeRecord cr WHERE cr.lastName = :lastName AND cr.consumeDate BETWEEN :startDate AND :endDate ORDER BY cr.createdAt DESC")
+    List<ConsumeRecord> findByLastNameAndDateRangeOrderByCreatedAtDesc(@Param("lastName") String lastName,
                                                                          @Param("startDate") LocalDate startDate,
                                                                          @Param("endDate") LocalDate endDate);
 
@@ -87,8 +90,8 @@ public interface ConsumeRecordRepository extends JpaRepository<ConsumeRecord, Lo
      * @param endDate 结束日期
      * @return 消费记录列表
      */
-    @Query("SELECT cr FROM ConsumeRecord cr WHERE cr.phone = :phone AND cr.lastName = :lastName AND cr.consumeDate BETWEEN :startDate AND :endDate ORDER BY cr.consumeDate DESC")
-    List<ConsumeRecord> findByPhoneAndLastNameAndDateRangeOrderByConsumeDateDesc(@Param("phone") String phone,
+    @Query("SELECT cr FROM ConsumeRecord cr WHERE cr.phone = :phone AND cr.lastName = :lastName AND cr.consumeDate BETWEEN :startDate AND :endDate ORDER BY cr.createdAt DESC")
+    List<ConsumeRecord> findByPhoneAndLastNameAndDateRangeOrderByCreatedAtDesc(@Param("phone") String phone,
                                                                                @Param("lastName") String lastName,
                                                                                @Param("startDate") LocalDate startDate,
                                                                                @Param("endDate") LocalDate endDate);
@@ -99,7 +102,8 @@ public interface ConsumeRecordRepository extends JpaRepository<ConsumeRecord, Lo
      * @param consumeType 消费类型
      * @return 消费记录列表
      */
-    List<ConsumeRecord> findByConsumeTypeOrderByConsumeDateDesc(String consumeType);
+    @Query("SELECT cr FROM ConsumeRecord cr WHERE cr.consumeType = :consumeType ORDER BY cr.createdAt DESC")
+    List<ConsumeRecord> findByConsumeTypeOrderByCreatedAtDesc(@Param("consumeType") String consumeType);
 
     /**
      * 统计会员总消费金额
@@ -124,6 +128,14 @@ public interface ConsumeRecordRepository extends JpaRepository<ConsumeRecord, Lo
      * 
      * @return 消费记录列表
      */
-    @Query("SELECT cr FROM ConsumeRecord cr ORDER BY cr.consumeDate DESC, cr.createdAt DESC")
+    @Query("SELECT cr FROM ConsumeRecord cr ORDER BY cr.createdAt DESC")
     List<ConsumeRecord> findRecentRecords();
+
+    /**
+     * 查找所有记录（按创建时间降序）
+     * 
+     * @return 消费记录列表
+     */
+    @Query("SELECT cr FROM ConsumeRecord cr ORDER BY cr.createdAt DESC")
+    List<ConsumeRecord> findAllByOrderByCreatedAtDesc();
 }

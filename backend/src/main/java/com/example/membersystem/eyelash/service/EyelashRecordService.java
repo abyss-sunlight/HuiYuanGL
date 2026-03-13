@@ -53,7 +53,7 @@ public class EyelashRecordService {
      */
     @Transactional(readOnly = true)
     public List<EyelashRecord> findAll() {
-        return eyelashRecordRepository.findAll();
+        return eyelashRecordRepository.findAllByOrderByCreatedAtDesc();
     }
 
     /**
@@ -64,7 +64,7 @@ public class EyelashRecordService {
      */
     @Transactional(readOnly = true)
     public List<EyelashRecord> findByPhone(String phone) {
-        return eyelashRecordRepository.findByPhoneOrderByRecordDateDesc(phone);
+        return eyelashRecordRepository.findByPhoneOrderByCreatedAtDesc(phone);
     }
 
     /**
@@ -75,7 +75,7 @@ public class EyelashRecordService {
      */
     @Transactional(readOnly = true)
     public List<EyelashRecord> findByLastName(String lastName) {
-        return eyelashRecordRepository.findByLastNameOrderByRecordDateDesc(lastName);
+        return eyelashRecordRepository.findByLastNameOrderByCreatedAtDesc(lastName);
     }
 
     /**
@@ -87,7 +87,7 @@ public class EyelashRecordService {
      */
     @Transactional(readOnly = true)
     public List<EyelashRecord> findByPhoneAndLastName(String phone, String lastName) {
-        return eyelashRecordRepository.findByPhoneAndLastNameOrderByRecordDateDesc(phone, lastName);
+        return eyelashRecordRepository.findByPhoneAndLastNameOrderByCreatedAtDesc(phone, lastName);
     }
 
     /**
@@ -99,7 +99,7 @@ public class EyelashRecordService {
      */
     @Transactional(readOnly = true)
     public List<EyelashRecord> findByDateRange(LocalDate startDate, LocalDate endDate) {
-        return eyelashRecordRepository.findByDateRangeOrderByRecordDateDesc(startDate, endDate);
+        return eyelashRecordRepository.findByDateRangeOrderByCreatedAtDesc(startDate, endDate);
     }
 
     /**
@@ -112,7 +112,7 @@ public class EyelashRecordService {
      */
     @Transactional(readOnly = true)
     public List<EyelashRecord> findByPhoneAndDateRange(String phone, LocalDate startDate, LocalDate endDate) {
-        return eyelashRecordRepository.findByPhoneAndDateRangeOrderByRecordDateDesc(phone, startDate, endDate);
+        return eyelashRecordRepository.findByPhoneAndDateRangeOrderByCreatedAtDesc(phone, startDate, endDate);
     }
 
     /**
@@ -125,7 +125,7 @@ public class EyelashRecordService {
      */
     @Transactional(readOnly = true)
     public List<EyelashRecord> findByLastNameAndDateRange(String lastName, LocalDate startDate, LocalDate endDate) {
-        return eyelashRecordRepository.findByLastNameAndDateRangeOrderByRecordDateDesc(lastName, startDate, endDate);
+        return eyelashRecordRepository.findByLastNameAndDateRangeOrderByCreatedAtDesc(lastName, startDate, endDate);
     }
 
     /**
@@ -139,7 +139,7 @@ public class EyelashRecordService {
      */
     @Transactional(readOnly = true)
     public List<EyelashRecord> findByPhoneAndLastNameAndDateRange(String phone, String lastName, LocalDate startDate, LocalDate endDate) {
-        return eyelashRecordRepository.findByPhoneAndLastNameAndDateRangeOrderByRecordDateDesc(phone, lastName, startDate, endDate);
+        return eyelashRecordRepository.findByPhoneAndLastNameAndDateRangeOrderByCreatedAtDesc(phone, lastName, startDate, endDate);
     }
 
     /**

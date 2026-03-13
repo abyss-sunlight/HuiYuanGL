@@ -32,6 +32,19 @@ public interface RechargeDiscountRepository extends JpaRepository<RechargeDiscou
                                                                   @Param("currentDate") LocalDate currentDate);
 
     /**
+     * 查找适用的折扣规则（小于等于充值金额的最大折扣）
+     * 
+     * @param rechargeAmount 充值金额
+     * @param currentDate 当前日期
+     * @return 适用的折扣规则列表
+     */
+    @Query("SELECT rd FROM RechargeDiscount rd WHERE rd.rechargeAmount <= :rechargeAmount " +
+           "AND rd.effectiveDate <= :currentDate AND rd.isActive = true " +
+           "ORDER BY rd.rechargeAmount DESC")
+    List<RechargeDiscount> findApplicableDiscounts(@Param("rechargeAmount") BigDecimal rechargeAmount, 
+                                                   @Param("currentDate") LocalDate currentDate);
+
+    /**
      * 查找所有折扣规则（按充值金额排序）
      * 
      * @return 所有折扣规则列表

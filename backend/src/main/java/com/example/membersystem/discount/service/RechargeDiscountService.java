@@ -142,7 +142,14 @@ public class RechargeDiscountService {
     @Transactional(readOnly = true)
     public Optional<RechargeDiscount> findApplicableDiscount(BigDecimal rechargeAmount) {
         LocalDate currentDate = LocalDate.now();
-        return rechargeDiscountRepository.findByRechargeAmountAndEffectiveDate(rechargeAmount, currentDate);
+        
+        // 查找小于等于充值金额的最大折扣规则
+        List<RechargeDiscount> applicableDiscounts = rechargeDiscountRepository
+            .findApplicableDiscounts(rechargeAmount, currentDate);
+        
+        // 返回充值金额最大的折扣规则（最优惠的）
+        return applicableDiscounts.stream()
+            .max((d1, d2) -> d1.getRechargeAmount().compareTo(d2.getRechargeAmount()));
     }
 
     /**

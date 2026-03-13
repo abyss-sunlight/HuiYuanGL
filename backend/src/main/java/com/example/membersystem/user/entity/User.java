@@ -155,13 +155,13 @@ public class User {
      * 会员账户的余额
      * 用于消费记录和充值记录
      * 
-     * 注意：
-     * - 可为空，非会员用户无账户金额
+     * 注意:
+     * - 默认值为0，新注册用户余额为0
      * - 金额单位为元，保留2位小数
      * 
      * 约束：最大10位整数，2位小数
      */
-    @Column(precision = 10, scale = 2)
+    @Column(precision = 10, scale = 2, columnDefinition = "DECIMAL(10,2) DEFAULT 0.00")
     private BigDecimal amount;
 
     /**
@@ -275,6 +275,16 @@ public class User {
         // 设置默认账户状态为正常
         if (this.status == null) {
             this.status = 0;
+        }
+        
+        // 设置默认余额为0
+        if (this.amount == null) {
+            this.amount = BigDecimal.ZERO;
+        }
+        
+        // 设置默认折扣为1.0（无折扣）
+        if (this.discount == null) {
+            this.discount = BigDecimal.ONE;
         }
         
         // 生成会员号（如果为空且权限等级为会员）

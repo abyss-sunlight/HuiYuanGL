@@ -21,7 +21,8 @@ public interface EyelashRecordRepository extends JpaRepository<EyelashRecord, Lo
      * @param phone 手机号
      * @return 睫毛记录列表
      */
-    List<EyelashRecord> findByPhoneOrderByRecordDateDesc(String phone);
+    @Query("SELECT er FROM EyelashRecord er WHERE er.phone = :phone ORDER BY er.createdAt DESC")
+    List<EyelashRecord> findByPhoneOrderByCreatedAtDesc(@Param("phone") String phone);
 
     /**
      * 根据姓氏查找记录
@@ -29,7 +30,8 @@ public interface EyelashRecordRepository extends JpaRepository<EyelashRecord, Lo
      * @param lastName 姓氏
      * @return 睫毛记录列表
      */
-    List<EyelashRecord> findByLastNameOrderByRecordDateDesc(String lastName);
+    @Query("SELECT er FROM EyelashRecord er WHERE er.lastName = :lastName ORDER BY er.createdAt DESC")
+    List<EyelashRecord> findByLastNameOrderByCreatedAtDesc(@Param("lastName") String lastName);
 
     /**
      * 根据手机号和姓氏查找记录
@@ -38,7 +40,8 @@ public interface EyelashRecordRepository extends JpaRepository<EyelashRecord, Lo
      * @param lastName 姓氏
      * @return 睫毛记录列表
      */
-    List<EyelashRecord> findByPhoneAndLastNameOrderByRecordDateDesc(String phone, String lastName);
+    @Query("SELECT er FROM EyelashRecord er WHERE er.phone = :phone AND er.lastName = :lastName ORDER BY er.createdAt DESC")
+    List<EyelashRecord> findByPhoneAndLastNameOrderByCreatedAtDesc(@Param("phone") String phone, @Param("lastName") String lastName);
 
     /**
      * 根据日期范围查找记录
@@ -47,8 +50,8 @@ public interface EyelashRecordRepository extends JpaRepository<EyelashRecord, Lo
      * @param endDate 结束日期
      * @return 睫毛记录列表
      */
-    @Query("SELECT er FROM EyelashRecord er WHERE er.recordDate BETWEEN :startDate AND :endDate ORDER BY er.recordDate DESC")
-    List<EyelashRecord> findByDateRangeOrderByRecordDateDesc(@Param("startDate") LocalDate startDate, 
+    @Query("SELECT er FROM EyelashRecord er WHERE er.recordDate BETWEEN :startDate AND :endDate ORDER BY er.createdAt DESC")
+    List<EyelashRecord> findByDateRangeOrderByCreatedAtDesc(@Param("startDate") LocalDate startDate, 
                                                            @Param("endDate") LocalDate endDate);
 
     /**
@@ -59,8 +62,8 @@ public interface EyelashRecordRepository extends JpaRepository<EyelashRecord, Lo
      * @param endDate 结束日期
      * @return 睫毛记录列表
      */
-    @Query("SELECT er FROM EyelashRecord er WHERE er.phone = :phone AND er.recordDate BETWEEN :startDate AND :endDate ORDER BY er.recordDate DESC")
-    List<EyelashRecord> findByPhoneAndDateRangeOrderByRecordDateDesc(@Param("phone") String phone,
+    @Query("SELECT er FROM EyelashRecord er WHERE er.phone = :phone AND er.recordDate BETWEEN :startDate AND :endDate ORDER BY er.createdAt DESC")
+    List<EyelashRecord> findByPhoneAndDateRangeOrderByCreatedAtDesc(@Param("phone") String phone,
                                                                        @Param("startDate") LocalDate startDate,
                                                                        @Param("endDate") LocalDate endDate);
 
@@ -72,8 +75,8 @@ public interface EyelashRecordRepository extends JpaRepository<EyelashRecord, Lo
      * @param endDate 结束日期
      * @return 睫毛记录列表
      */
-    @Query("SELECT er FROM EyelashRecord er WHERE er.lastName = :lastName AND er.recordDate BETWEEN :startDate AND :endDate ORDER BY er.recordDate DESC")
-    List<EyelashRecord> findByLastNameAndDateRangeOrderByRecordDateDesc(@Param("lastName") String lastName,
+    @Query("SELECT er FROM EyelashRecord er WHERE er.lastName = :lastName AND er.recordDate BETWEEN :startDate AND :endDate ORDER BY er.createdAt DESC")
+    List<EyelashRecord> findByLastNameAndDateRangeOrderByCreatedAtDesc(@Param("lastName") String lastName,
                                                                          @Param("startDate") LocalDate startDate,
                                                                          @Param("endDate") LocalDate endDate);
 
@@ -86,8 +89,8 @@ public interface EyelashRecordRepository extends JpaRepository<EyelashRecord, Lo
      * @param endDate 结束日期
      * @return 睫毛记录列表
      */
-    @Query("SELECT er FROM EyelashRecord er WHERE er.phone = :phone AND er.lastName = :lastName AND er.recordDate BETWEEN :startDate AND :endDate ORDER BY er.recordDate DESC")
-    List<EyelashRecord> findByPhoneAndLastNameAndDateRangeOrderByRecordDateDesc(@Param("phone") String phone,
+    @Query("SELECT er FROM EyelashRecord er WHERE er.phone = :phone AND er.lastName = :lastName AND er.recordDate BETWEEN :startDate AND :endDate ORDER BY er.createdAt DESC")
+    List<EyelashRecord> findByPhoneAndLastNameAndDateRangeOrderByCreatedAtDesc(@Param("phone") String phone,
                                                                                @Param("lastName") String lastName,
                                                                                @Param("startDate") LocalDate startDate,
                                                                                @Param("endDate") LocalDate endDate);
@@ -105,6 +108,14 @@ public interface EyelashRecordRepository extends JpaRepository<EyelashRecord, Lo
      * 
      * @return 睫毛记录列表
      */
-    @Query("SELECT er FROM EyelashRecord er ORDER BY er.recordDate DESC, er.createdAt DESC")
+    @Query("SELECT er FROM EyelashRecord er ORDER BY er.createdAt DESC")
     List<EyelashRecord> findRecentRecords();
+
+    /**
+     * 查找所有记录（按创建时间降序）
+     * 
+     * @return 睫毛记录列表
+     */
+    @Query("SELECT er FROM EyelashRecord er ORDER BY er.createdAt DESC")
+    List<EyelashRecord> findAllByOrderByCreatedAtDesc();
 }

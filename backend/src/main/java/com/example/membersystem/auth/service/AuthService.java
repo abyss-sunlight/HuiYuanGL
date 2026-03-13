@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 /**
@@ -104,6 +105,8 @@ public class AuthService {
             user.setGender(1); // 默认性别为男性
             user.setPermissionLevel(4); // 默认权限为游客
             user.setStatus(0); // 默认状态为正常
+            user.setAmount(BigDecimal.ZERO); // 默认余额为0
+            user.setDiscount(BigDecimal.ONE); // 默认折扣为1.0（无折扣）
             
             // 保存新用户（会自动触发@PrePersist设置创建时间等）
             user = userRepository.save(user);

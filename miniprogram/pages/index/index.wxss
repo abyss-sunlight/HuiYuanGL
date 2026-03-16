@@ -31,6 +31,109 @@
   line-height: 1.6;
 }
 
+/* 轮播内容样式 */
+.carousel-section {
+  margin-bottom: 40rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+  text-align: center;
+}
+
+.video-section {
+  background: white;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.1);
+}
+
+.video-container {
+  position: relative;
+  width: 100%;
+  border-radius: 12rpx;
+  overflow: hidden;
+}
+
+.carousel-video {
+  width: 100%;
+  height: 400rpx;
+  border-radius: 12rpx;
+  background: #f0f0f0;
+}
+
+.video-controls {
+  position: absolute;
+  top: 20rpx;
+  right: 20rpx;
+  z-index: 10;
+}
+
+.control-btn {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+}
+
+.control-btn:active {
+  background: rgba(0, 0, 0, 0.8);
+  transform: scale(0.95);
+}
+
+.control-icon {
+  font-size: 32rpx;
+  color: white;
+}
+
+.image-carousel-section {
+  background: white;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.1);
+  position: relative;
+}
+
+.image-swiper {
+  width: 100%;
+  height: 400rpx;
+  border-radius: 12rpx;
+  overflow: hidden;
+}
+
+.carousel-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 12rpx;
+}
+
+.content-overlay {
+  position: absolute;
+  bottom: 30rpx;
+  left: 30rpx;
+  right: 30rpx;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 12rpx;
+  padding: 20rpx;
+}
+
+.content-text {
+  color: white;
+  font-size: 28rpx;
+  text-align: center;
+  line-height: 1.4;
+}
+
 .feature-grid {
   display: flex;
   gap: 30rpx;
@@ -52,7 +155,7 @@
 }
 
 .feature-icon {
-  font-size: 60rpx;
+  font-size: 64rpx;
   margin-bottom: 20rpx;
 }
 

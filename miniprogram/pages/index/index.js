@@ -4,6 +4,14 @@ const { isLoggedIn, getUserInfo } = require('../../utils/auth')
 Page({
   data: {
     userInfo: null,
+    carouselContent: {
+      title: '',
+      videoUrl: '',
+      images: [],
+      contents: []
+    },
+    currentImageIndex: 0,
+    videoMuted: true,  // 视频默认静音
     stats: {
       totalMembers: 0,
       todayNew: 0,
@@ -13,23 +21,158 @@ Page({
 
   onLoad() {
     this.setData({ userInfo: getUserInfo() })
+    this.loadCarouselContent()
     this.loadStats()
   },
 
   onShow() {
-    // 每次显示页面时重新加载统计数据
+    // 每次显示页面时重新加载数据
     this.setData({ userInfo: getUserInfo() })
+    this.loadCarouselContent()
     this.loadStats()
   },
 
-  loadStats() {
-    // 加载统计数据（这里先用模拟数据，后续可以调用真实接口）
+  loadCarouselContent() {
+    // 检查权限：只有未登录、游客、会员可以看到轮播内容
+    const userInfo = getUserInfo()
+    if (userInfo && userInfo.permissionLevel < 3) {
+      // 员工及以上权限不显示轮播内容
+      this.setData({
+        carouselContent: {
+          title: '',
+          videoUrl: '',
+          images: [],
+          contents: []
+        }
+      })
+      return
+    }
+
+    // 调用轮播内容API
+    request({
+      url: '/api/carousel/latest',
+      method: 'GET'
+    }).then(response => {
+      const images = [
+        response.image1Url || '',
+        response.image2Url || '',
+        response.image3Url || '',
+        response.image4Url || '',
+        response.image5Url || ''
+      ].filter(url => url.trim() !== '')
+
+      const contents = [
+        response.content1 || '',
+        response.content2 || '',
+        response.content3 || '',
+        response.content4 || '',
+        response.content5 || ''
+      ].filter(content => content.trim() !== '')
+
+      this.setData({
+        carouselContent: {
+          title: response.title || '欢迎光临',
+          videoUrl: response.videoUrl || '',
+          images: images,
+          contents: contents
+        }
+      })
+    }).catch(err => {
+      console.error('加载轮播内容失败:', err)
+      
+      // 加载失败时设置默认值
+      this.setData({
+        carouselContent: {
+          title: '欢迎光临',
+          videoUrl: '',
+          images: [],
+          contents: []
+        }
+      })
+    })
+  },
+
+  onImageChange(e) {
     this.setData({
-      stats: {
-        totalMembers: 156,
-        todayNew: 8,
-        activeUsers: 42
-      }
+      currentImageIndex: e.detail.current
+    })
+  },
+
+  toggleMute() {
+    this.setData({
+      videoMuted: !this.data.videoMuted
+    })
+    
+    // 显示提示
+    wx.showToast({
+      title: this.data.videoMuted ? '已静音' : '已开启声音',
+      icon: 'none',
+      duration: 1000
+    })
+  },
+
+  loadStats() {
+    // 检查登录状态和权限
+    if (!isLoggedIn()) {
+      // 未登录时不显示统计数据
+      this.setData({
+        stats: {
+          totalMembers: 0,
+          todayNew: 0,
+          activeUsers: 0
+        }
+      })
+      return
+    }
+
+    const userInfo = getUserInfo()
+    if (userInfo && userInfo.permissionLevel > 2) {
+      // 只有员工及以上权限可以查看统计数据
+      this.setData({
+        stats: {
+          totalMembers: 0,
+          todayNew: 0,
+          activeUsers: 0
+        }
+      })
+      return
+    }
+
+    // 调用统计API
+    wx.showLoading({
+      title: '加载统计数据...',
+      mask: true
+    })
+
+    request({
+      url: '/api/stats',
+      method: 'GET'
+    }).then(response => {
+      wx.hideLoading()
+      this.setData({
+        stats: {
+          totalMembers: response.totalMembers || 0,
+          todayNew: response.todayNew || 0,
+          activeUsers: response.activeUsers || 0
+        }
+      })
+    }).catch(err => {
+      wx.hideLoading()
+      console.error('加载统计数据失败:', err)
+      
+      // 加载失败时显示默认值
+      this.setData({
+        stats: {
+          totalMembers: 0,
+          todayNew: 0,
+          activeUsers: 0
+        }
+      })
+      
+      wx.showToast({
+        title: '统计数据加载失败',
+        icon: 'none'
+      })
     })
   },
 

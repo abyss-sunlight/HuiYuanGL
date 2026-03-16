@@ -11,6 +11,7 @@ Page({
     userInfo: null,             // 用户信息对象
     showSmsForm: false,         // 短信登录表单显示状态
     showPasswordForm: false,     // 密码登录表单显示状态
+    showRegisterModal: false,    // 新用户注册模态弹窗显示状态
     
     // 短信登录相关数据
     smsPhone: '',               // 短信登录手机号
@@ -23,7 +24,14 @@ Page({
     passwordPhone: '',          // 密码登录手机号
     password: '',              // 密码登录密码
     showPassword: false,       // 密码显示/隐藏状态
-    passwordLogging: false      // 密码登录状态
+    passwordLogging: false,     // 密码登录状态
+    
+    // 新用户注册相关数据
+    registerForm: {
+      lastName: '',            // 姓氏
+      gender: 1               // 性别（默认男性）
+    },
+    tempUserInfo: null        // 临时用户信息（登录成功但需要补充信息）
   },
 
   // 页面生命周期：页面加载时执行
@@ -264,6 +272,24 @@ Page({
     console.log('处理登录成功:', response)  // 调试日志
     wx.hideLoading()  // 隐藏加载提示
     
+    // 检查是否是新用户（lastName为空或为默认值"用户"）
+    const isNewUser = !response.lastName || response.lastName === '用户'
+    
+    if (isNewUser) {
+      // 新用户：显示注册模态弹窗，保存临时信息
+      this.setData({
+        showRegisterModal: true,
+        tempUserInfo: response
+      })
+    } else {
+      // 老用户：正常登录
+      this.completeLogin(response)
+    }
+  },
+  
+  // 完成登录流程
+  // 保存用户信息并更新页面状态
+  completeLogin(response) {
     // 保存token和用户信息到本地存储
     wx.setStorageSync('token', response.token)
     wx.setStorageSync('userInfo', {
@@ -286,6 +312,12 @@ Page({
     this.setData({
       showSmsForm: false,
       showPasswordForm: false,
+      showRegisterModal: false,
+      tempUserInfo: null,
+      registerForm: {
+        lastName: '',
+        gender: 1
+      },
 
       smsPhone: '',
       smsCode: '',
@@ -327,6 +359,99 @@ Page({
   goToSetPassword() {
     wx.navigateTo({
       url: '/pages/set-password/set-password'
+    })
+  },
+
+  // ===== 新用户注册模态弹窗相关方法 =====
+  
+  // 输入姓氏
+  onRegisterLastNameInput(e) {
+    this.setData({
+      'registerForm.lastName': e.detail.value
+    })
+  },
+
+  // 选择性别
+  onGenderChange(e) {
+    this.setData({
+      'registerForm.gender': parseInt(e.detail.value)
+    })
+  },
+
+  // 取消注册
+  cancelRegister() {
+    this.setData({
+      showRegisterModal: false,
+      tempUserInfo: null,
+      registerForm: {
+        lastName: '',
+        gender: 1
+      }
+    })
+  },
+
+  // 提交注册信息
+  submitRegister() {
+    const { registerForm, tempUserInfo } = this.data
+    
+    // 表单验证
+    if (!registerForm.lastName.trim()) {
+      wx.showToast({
+        title: '请输入姓氏',
+        icon: 'none'
+      })
+      return
+    }
+
+    if (registerForm.lastName.trim().length > 10) {
+      wx.showToast({
+        title: '姓氏不能超过10个字符',
+        icon: 'none'
+      })
+      return
+    }
+
+    // 显示加载提示
+    wx.showLoading({
+      title: '提交中...',
+      mask: true
+    })
+
+    // 构造更新数据
+    const updateData = {
+      lastName: registerForm.lastName.trim(),
+      gender: registerForm.gender
+    }
+
+    // 发送请求更新用户信息
+    request({
+      url: '/api/users/' + tempUserInfo.userId,
+      method: 'PUT',
+      data: updateData
+    }).then(response => {
+      wx.hideLoading()
+      
+      // 更新临时用户信息
+      const updatedUserInfo = {
+        ...tempUserInfo,
+        ...updateData
+      }
+
+      // 完成登录流程
+      this.completeLogin(updatedUserInfo)
+      
+      wx.showToast({
+        title: '注册成功',
+        icon: 'success'
+      })
+    }).catch(err => {
+      wx.hideLoading()
+      console.error('更新用户信息失败:', err)
+      
+      wx.showToast({
+        title: '注册失败，请重试',
+        icon: 'none'
+      })
     })
   },
 

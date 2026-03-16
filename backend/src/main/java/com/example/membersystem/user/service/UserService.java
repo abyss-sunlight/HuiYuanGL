@@ -4,6 +4,7 @@ import com.example.membersystem.user.dto.UserListItemResponse;
 import com.example.membersystem.user.entity.User;
 import com.example.membersystem.user.repo.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -21,6 +22,30 @@ public class UserService {
                 .stream()
                 .map(UserService::toListItem)
                 .toList();
+    }
+
+    /**
+     * 更新用户信息
+     * 
+     * @param userId 用户ID
+     * @param lastName 姓氏
+     * @param gender 性别
+     * @return 更新后的用户信息
+     */
+    @Transactional
+    public User updateUser(Long userId, String lastName, Integer gender) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("用户不存在"));
+
+        // 更新用户信息
+        if (lastName != null && !lastName.trim().isEmpty()) {
+            user.setLastName(lastName.trim());
+        }
+        if (gender != null) {
+            user.setGender(gender);
+        }
+
+        return userRepository.save(user);
     }
 
     private static UserListItemResponse toListItem(User u) {

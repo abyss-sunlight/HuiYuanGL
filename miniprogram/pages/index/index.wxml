@@ -5,6 +5,60 @@
     <view class="welcome-desc">高效管理会员信息，提供优质服务体验</view>
   </view>
 
+  <!-- 轮播内容区域：只有未登录、游客、会员可见 -->
+  <view class="carousel-section" wx:if="{{!userInfo || userInfo.permissionLevel >= 3}}">
+    <!-- 视频区域 -->
+    <view class="video-section" wx:if="{{carouselContent.videoUrl}}">
+      <view class="section-title">{{carouselContent.title}}</view>
+      <view class="video-container">
+        <video 
+          class="carousel-video"
+          src="{{carouselContent.videoUrl}}"
+          autoplay="{{true}}"
+          loop="{{true}}"
+          muted="{{videoMuted}}"
+          show-center-play-btn="{{false}}"
+          show-play-btn="{{false}}"
+          controls="{{false}}"
+          object-fit="cover"
+        ></video>
+        
+        <!-- 悬浮控制按钮 -->
+        <view class="video-controls">
+          <button class="control-btn mute-btn" bindtap="toggleMute">
+            <text class="control-icon">{{videoMuted ? '🔇' : '🔊'}}</text>
+          </button>
+        </view>
+      </view>
+    </view>
+
+    <!-- 图片轮播区域 -->
+    <view class="image-carousel-section" wx:if="{{carouselContent.images.length > 0}}">
+      <swiper 
+        class="image-swiper"
+        indicator-dots="{{true}}"
+        autoplay="{{true}}"
+        interval="3000"
+        duration="500"
+        bindchange="onImageChange"
+      >
+        <swiper-item wx:for="{{carouselContent.images}}" wx:key="*this">
+          <image 
+            class="carousel-image" 
+            src="{{item}}"
+            mode="aspectFill"
+            lazy-load="{{true}}"
+          ></image>
+        </swiper-item>
+      </swiper>
+      
+      <!-- 当前图片的文案 -->
+      <view class="content-overlay">
+        <text class="content-text">{{carouselContent.contents[currentImageIndex] || ''}}</text>
+      </view>
+    </view>
+  </view>
+
   <view class="feature-grid">
     <view class="feature-item" bindtap="goToRecords">
       <view class="feature-icon">📋</view>
@@ -12,12 +66,14 @@
       <view class="feature-desc">查看和管理会员信息</view>
     </view>
 
+    <!-- 只有员工及以上权限才能看到成员列表 -->
     <view class="feature-item" wx:if="{{userInfo && userInfo.permissionLevel <= 2}}" bindtap="goToMembers">
       <view class="feature-icon">👥</view>
       <view class="feature-title">成员列表</view>
       <view class="feature-desc">查看系统用户信息</view>
     </view>
 
+    <!-- 只有店长权限才能看到充值折扣管理 -->
     <view class="feature-item" wx:if="{{userInfo && userInfo.permissionLevel === 1}}" bindtap="goToDiscountManagement">
       <view class="feature-icon">💰</view>
       <view class="feature-title">充值折扣</view>
@@ -31,7 +87,8 @@
     </view>
   </view>
 
-  <view class="stats-card">
+  <!-- 只有员工及以上权限才能看到系统统计 -->
+  <view class="stats-card" wx:if="{{userInfo && userInfo.permissionLevel <= 2}}">
     <view class="stats-title">系统统计</view>
     <view class="stats-grid">
       <view class="stats-item">
@@ -49,7 +106,8 @@
     </view>
   </view>
 
-  <view class="quick-actions">
+  <!-- 快捷操作区域：只有店长权限可见 -->
+  <view class="quick-actions" wx:if="{{userInfo && userInfo.permissionLevel === 1}}">
     <view class="action-title">快捷操作</view>
     <button class="action-btn secondary" bindtap="viewReports">
       <text class="btn-icon">📊</text>

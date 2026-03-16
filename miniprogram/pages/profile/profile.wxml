@@ -153,3 +153,38 @@
     <button class="logout-btn" bindtap="logout" wx:if="{{isLoggedIn}}">退出登录</button>
   </view>
 </view>
+
+<!-- 新用户注册模态弹窗 -->
+<view class="modal-overlay" wx:if="{{showRegisterModal}}">
+  <view class="modal-content register-modal">
+    <view class="modal-header">
+      <text class="modal-title">完善个人信息</text>
+      <text class="modal-subtitle">请补充您的姓名和性别</text>
+    </view>
+    
+    <view class="modal-body">
+      <view class="form-group">
+        <text class="form-label">姓氏 *</text>
+        <input class="form-input" placeholder="请输入您的姓氏" 
+               bindinput="onRegisterLastNameInput" 
+               value="{{registerForm.lastName}}" 
+               maxlength="10" />
+      </view>
+      
+      <view class="form-group">
+        <text class="form-label">性别 *</text>
+        <radio-group class="radio-group" bindchange="onGenderChange">
+          <label class="radio-item" wx:for="{{[{value: 1, name: '男'}, {value: 2, name: '女'}]}}" wx:key="value">
+            <radio value="{{item.value}}" checked="{{registerForm.gender === item.value}}" />
+            <text class="radio-text">{{item.name}}</text>
+          </label>
+        </radio-group>
+      </view>
+    </view>
+    
+    <view class="modal-footer">
+      <button class="btn secondary" bindtap="cancelRegister">取消</button>
+      <button class="btn primary" bindtap="submitRegister">确认提交</button>
+    </view>
+  </view>
+</view>

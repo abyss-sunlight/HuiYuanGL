@@ -2,10 +2,14 @@ package com.example.membersystem.consume.controller;
 
 import com.example.membersystem.consume.entity.ConsumeRecord;
 import com.example.membersystem.consume.service.ConsumeRecordService;
+import com.example.membersystem.user.entity.User;
+import com.example.membersystem.user.service.UserService;
+import com.example.membersystem.auth.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -23,19 +27,63 @@ import java.util.Optional;
 public class ConsumeRecordController {
 
     private final ConsumeRecordService consumeRecordService;
+    private final UserService userService;
+    private final JwtUtil jwtUtil;
 
     @Autowired
-    public ConsumeRecordController(ConsumeRecordService consumeRecordService) {
+    public ConsumeRecordController(ConsumeRecordService consumeRecordService, UserService userService, JwtUtil jwtUtil) {
         this.consumeRecordService = consumeRecordService;
+        this.userService = userService;
+        this.jwtUtil = jwtUtil;
+    }
+
+    /**
+     * 获取当前用户信息
+     */
+    private User getCurrentUser(HttpServletRequest request) {
+        String token = request.getHeader("Authorization");
+        if (token != null && token.startsWith("Bearer ")) {
+            token = token.substring(7);
+            String phone = jwtUtil.getPhoneFromToken(token);
+            Optional<User> userOptional = userService.findByPhone(phone);
+            return userOptional.orElse(null);
+        }
+        return null;
+    }
+
+    /**
+     * 检查权限并过滤手机号
+     */
+    private String filterPhoneByPermission(String phone, User currentUser) {
+        if (currentUser == null) {
+            return phone; // 未登录用户，不限制
+        }
+        
+        // 游客和会员只能查看自己的记录
+        if (currentUser.getPermissionLevel() >= 3) {
+            return currentUser.getPhone();
+        }
+        
+        // 员工和店长可以查看所有记录
+        return phone;
     }
 
     /**
      * 获取所有消费记录
      */
     @GetMapping
-    public ResponseEntity<Map<String, Object>> getAllRecords() {
+    public ResponseEntity<Map<String, Object>> getAllRecords(HttpServletRequest request) {
         try {
-            List<ConsumeRecord> records = consumeRecordService.findAll();
+            User currentUser = getCurrentUser(request);
+            List<ConsumeRecord> records;
+            
+            if (currentUser != null && currentUser.getPermissionLevel() >= 3) {
+                // 游客和会员只能查看自己的记录
+                records = consumeRecordService.findByPhone(currentUser.getPhone());
+            } else {
+                // 员工和店长可以查看所有记录
+                records = consumeRecordService.findAll();
+            }
             
             Map<String, Object> response = new HashMap<>();
             response.put("code", 0);
@@ -56,15 +104,29 @@ public class ConsumeRecordController {
      * 根据ID获取消费记录
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Map<String, Object>> getRecordById(@PathVariable Long id) {
+    public ResponseEntity<Map<String, Object>> getRecordById(@PathVariable Long id, HttpServletRequest request) {
         try {
-            Optional<ConsumeRecord> record = consumeRecordService.findById(id);
+            Optional<ConsumeRecord> recordOptional = consumeRecordService.findById(id);
             
-            if (record.isPresent()) {
+            if (recordOptional.isPresent()) {
+                ConsumeRecord record = recordOptional.get();
+                User currentUser = getCurrentUser(request);
+                
+                // 权限检查：游客和会员只能查看自己的记录
+                if (currentUser != null && currentUser.getPermissionLevel() >= 3) {
+                    if (!record.getPhone().equals(currentUser.getPhone())) {
+                        Map<String, Object> response = new HashMap<>();
+                        response.put("code", 403);
+                        response.put("message", "无权限查看此记录");
+                        
+                        return ResponseEntity.status(403).body(response);
+                    }
+                }
+                
                 Map<String, Object> response = new HashMap<>();
                 response.put("code", 0);
                 response.put("message", "获取成功");
-                response.put("data", record.get());
+                response.put("data", record);
                 
                 return ResponseEntity.ok(response);
             } else {
@@ -87,9 +149,12 @@ public class ConsumeRecordController {
      * 根据手机号查找记录
      */
     @GetMapping("/phone/{phone}")
-    public ResponseEntity<Map<String, Object>> getRecordsByPhone(@PathVariable String phone) {
+    public ResponseEntity<Map<String, Object>> getRecordsByPhone(@PathVariable String phone, HttpServletRequest request) {
         try {
-            List<ConsumeRecord> records = consumeRecordService.findByPhone(phone);
+            User currentUser = getCurrentUser(request);
+            String filteredPhone = filterPhoneByPermission(phone, currentUser);
+            
+            List<ConsumeRecord> records = consumeRecordService.findByPhone(filteredPhone);
             
             Map<String, Object> response = new HashMap<>();
             response.put("code", 0);
@@ -161,23 +226,27 @@ public class ConsumeRecordController {
             @RequestParam(required = false) String lastName,
             @RequestParam(required = false) String consumeType,
             @RequestParam(required = false) String startDate,
-            @RequestParam(required = false) String endDate) {
+            @RequestParam(required = false) String endDate,
+            HttpServletRequest request) {
         try {
+            User currentUser = getCurrentUser(request);
+            String filteredPhone = filterPhoneByPermission(phone, currentUser);
+            
             List<ConsumeRecord> records;
             
             LocalDate start = startDate != null ? LocalDate.parse(startDate) : null;
             LocalDate end = endDate != null ? LocalDate.parse(endDate) : null;
             
-            if (phone != null && lastName != null && start != null && end != null) {
-                records = consumeRecordService.findByPhoneAndLastNameAndDateRange(phone, lastName, start, end);
-            } else if (phone != null && lastName != null) {
-                records = consumeRecordService.findByPhoneAndLastName(phone, lastName);
-            } else if (phone != null && start != null && end != null) {
-                records = consumeRecordService.findByPhoneAndDateRange(phone, start, end);
+            if (filteredPhone != null && lastName != null && start != null && end != null) {
+                records = consumeRecordService.findByPhoneAndLastNameAndDateRange(filteredPhone, lastName, start, end);
+            } else if (filteredPhone != null && lastName != null) {
+                records = consumeRecordService.findByPhoneAndLastName(filteredPhone, lastName);
+            } else if (filteredPhone != null && start != null && end != null) {
+                records = consumeRecordService.findByPhoneAndDateRange(filteredPhone, start, end);
             } else if (lastName != null && start != null && end != null) {
                 records = consumeRecordService.findByLastNameAndDateRange(lastName, start, end);
-            } else if (phone != null) {
-                records = consumeRecordService.findByPhone(phone);
+            } else if (filteredPhone != null) {
+                records = consumeRecordService.findByPhone(filteredPhone);
             } else if (lastName != null) {
                 records = consumeRecordService.findByLastName(lastName);
             } else if (consumeType != null) {
@@ -185,7 +254,12 @@ public class ConsumeRecordController {
             } else if (start != null && end != null) {
                 records = consumeRecordService.findByDateRange(start, end);
             } else {
-                records = consumeRecordService.findAll();
+                // 如果没有指定查询条件，根据权限返回记录
+                if (currentUser != null && currentUser.getPermissionLevel() >= 3) {
+                    records = consumeRecordService.findByPhone(currentUser.getPhone());
+                } else {
+                    records = consumeRecordService.findAll();
+                }
             }
             
             Map<String, Object> response = new HashMap<>();
@@ -317,10 +391,13 @@ public class ConsumeRecordController {
      * 获取会员统计信息
      */
     @GetMapping("/stats/{phone}")
-    public ResponseEntity<Map<String, Object>> getMemberStats(@PathVariable String phone) {
+    public ResponseEntity<Map<String, Object>> getMemberStats(@PathVariable String phone, HttpServletRequest request) {
         try {
-            BigDecimal totalConsume = consumeRecordService.getTotalConsumeAmount(phone);
-            BigDecimal totalRecharge = consumeRecordService.getTotalRechargeAmount(phone);
+            User currentUser = getCurrentUser(request);
+            String filteredPhone = filterPhoneByPermission(phone, currentUser);
+            
+            BigDecimal totalConsume = consumeRecordService.getTotalConsumeAmount(filteredPhone);
+            BigDecimal totalRecharge = consumeRecordService.getTotalRechargeAmount(filteredPhone);
             
             Map<String, Object> stats = new HashMap<>();
             stats.put("totalConsume", totalConsume);

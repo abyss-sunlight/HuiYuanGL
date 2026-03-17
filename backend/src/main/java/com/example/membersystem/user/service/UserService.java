@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -22,6 +23,17 @@ public class UserService {
                 .stream()
                 .map(UserService::toListItem)
                 .toList();
+    }
+
+    /**
+     * 根据手机号查找用户
+     * 
+     * @param phone 手机号
+     * @return 用户信息（如果存在）
+     */
+    @Transactional(readOnly = true)
+    public Optional<User> findByPhone(String phone) {
+        return userRepository.findByPhone(phone);
     }
 
     /**

@@ -2,10 +2,14 @@ package com.example.membersystem.eyelash.controller;
 
 import com.example.membersystem.eyelash.entity.EyelashRecord;
 import com.example.membersystem.eyelash.service.EyelashRecordService;
+import com.example.membersystem.user.entity.User;
+import com.example.membersystem.user.service.UserService;
+import com.example.membersystem.auth.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -22,19 +26,63 @@ import java.util.Optional;
 public class EyelashRecordController {
 
     private final EyelashRecordService eyelashRecordService;
+    private final UserService userService;
+    private final JwtUtil jwtUtil;
 
     @Autowired
-    public EyelashRecordController(EyelashRecordService eyelashRecordService) {
+    public EyelashRecordController(EyelashRecordService eyelashRecordService, UserService userService, JwtUtil jwtUtil) {
         this.eyelashRecordService = eyelashRecordService;
+        this.userService = userService;
+        this.jwtUtil = jwtUtil;
+    }
+
+    /**
+     * 获取当前用户信息
+     */
+    private User getCurrentUser(HttpServletRequest request) {
+        String token = request.getHeader("Authorization");
+        if (token != null && token.startsWith("Bearer ")) {
+            token = token.substring(7);
+            String phone = jwtUtil.getPhoneFromToken(token);
+            Optional<User> userOptional = userService.findByPhone(phone);
+            return userOptional.orElse(null);
+        }
+        return null;
+    }
+
+    /**
+     * 检查权限并过滤手机号
+     */
+    private String filterPhoneByPermission(String phone, User currentUser) {
+        if (currentUser == null) {
+            return phone; // 未登录用户，不限制
+        }
+        
+        // 游客和会员只能查看自己的记录
+        if (currentUser.getPermissionLevel() >= 3) {
+            return currentUser.getPhone();
+        }
+        
+        // 员工和店长可以查看所有记录
+        return phone;
     }
 
     /**
      * 获取所有睫毛记录
      */
     @GetMapping
-    public ResponseEntity<Map<String, Object>> getAllRecords() {
+    public ResponseEntity<Map<String, Object>> getAllRecords(HttpServletRequest request) {
         try {
-            List<EyelashRecord> records = eyelashRecordService.findAll();
+            User currentUser = getCurrentUser(request);
+            List<EyelashRecord> records;
+            
+            if (currentUser != null && currentUser.getPermissionLevel() >= 3) {
+                // 游客和会员只能查看自己的记录
+                records = eyelashRecordService.findByPhone(currentUser.getPhone());
+            } else {
+                // 员工和店长可以查看所有记录
+                records = eyelashRecordService.findAll();
+            }
             
             Map<String, Object> response = new HashMap<>();
             response.put("code", 0);
@@ -55,15 +103,29 @@ public class EyelashRecordController {
      * 根据ID获取睫毛记录
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Map<String, Object>> getRecordById(@PathVariable Long id) {
+    public ResponseEntity<Map<String, Object>> getRecordById(@PathVariable Long id, HttpServletRequest request) {
         try {
-            Optional<EyelashRecord> record = eyelashRecordService.findById(id);
+            Optional<EyelashRecord> recordOptional = eyelashRecordService.findById(id);
             
-            if (record.isPresent()) {
+            if (recordOptional.isPresent()) {
+                EyelashRecord record = recordOptional.get();
+                User currentUser = getCurrentUser(request);
+                
+                // 权限检查：游客和会员只能查看自己的记录
+                if (currentUser != null && currentUser.getPermissionLevel() >= 3) {
+                    if (!record.getPhone().equals(currentUser.getPhone())) {
+                        Map<String, Object> response = new HashMap<>();
+                        response.put("code", 403);
+                        response.put("message", "无权限查看此记录");
+                        
+                        return ResponseEntity.status(403).body(response);
+                    }
+                }
+                
                 Map<String, Object> response = new HashMap<>();
                 response.put("code", 0);
                 response.put("message", "获取成功");
-                response.put("data", record.get());
+                response.put("data", record);
                 
                 return ResponseEntity.ok(response);
             } else {
@@ -86,9 +148,12 @@ public class EyelashRecordController {
      * 根据手机号查找记录
      */
     @GetMapping("/phone/{phone}")
-    public ResponseEntity<Map<String, Object>> getRecordsByPhone(@PathVariable String phone) {
+    public ResponseEntity<Map<String, Object>> getRecordsByPhone(@PathVariable String phone, HttpServletRequest request) {
         try {
-            List<EyelashRecord> records = eyelashRecordService.findByPhone(phone);
+            User currentUser = getCurrentUser(request);
+            String filteredPhone = filterPhoneByPermission(phone, currentUser);
+            
+            List<EyelashRecord> records = eyelashRecordService.findByPhone(filteredPhone);
             
             Map<String, Object> response = new HashMap<>();
             response.put("code", 0);

@@ -165,12 +165,57 @@ Page({
   // 删除成员
   deleteMember(e) {
     const user = e.currentTarget.dataset.user
+    const { userInfo } = this.data
+    
+    // 检查权限：只有店长可以删除用户
+    if (userInfo.permissionLevel > 1) {
+      wx.showToast({ 
+        title: '权限不足，只有店长可以删除用户', 
+        icon: 'none' 
+      })
+      return
+    }
+    
+    // 检查是否尝试删除店长
+    if (user.permissionLevel === 1) {
+      wx.showToast({ 
+        title: '不能删除店长账户', 
+        icon: 'none' 
+      })
+      return
+    }
+    
     wx.showModal({
       title: '确认删除',
-      content: `确定要删除成员 ${user.username} 吗？`,
-      success: (res) => {
+      content: `确定要删除成员 ${user.username}(${user.phone}) 吗？\n删除后将无法恢复！`,
+      confirmText: '确认删除',
+      confirmColor: '#ff4757',
+      success: async (res) => {
         if (res.confirm) {
-          wx.showToast({ title: '删除功能开发中', icon: 'none' })
+          try {
+            wx.showLoading({ title: '删除中...' })
+            
+            await request({
+              url: `/api/users/${user.userId}`,
+              method: 'DELETE'
+            })
+            
+            wx.hideLoading()
+            wx.showToast({
+              title: '删除成功',
+              icon: 'success'
+            })
+            
+            // 重新加载数据
+            this.search()
+          } catch (error) {
+            wx.hideLoading()
+            console.error('删除用户失败:', error)
+            wx.showToast({
+              title: error.message || '删除失败',
+              icon: 'none'
+            })
+          }
         }
       }
     })

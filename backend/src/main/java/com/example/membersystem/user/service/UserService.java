@@ -37,6 +37,26 @@ public class UserService {
     }
 
     /**
+     * 删除用户
+     * 
+     * @param userId 用户ID
+     */
+    @Transactional
+    public void deleteUser(Long userId) {
+        // 检查用户是否存在
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("用户不存在"));
+        
+        // 检查权限：不能删除店长
+        if (user.getPermissionLevel() == 1) {
+            throw new RuntimeException("不能删除店长账户");
+        }
+        
+        // 删除用户（级联删除相关记录）
+        userRepository.deleteById(userId);
+    }
+
+    /**
      * 更新用户信息
      * 
      * @param userId 用户ID

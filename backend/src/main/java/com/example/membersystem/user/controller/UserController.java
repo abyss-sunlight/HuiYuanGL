@@ -46,6 +46,19 @@ public class UserController {
     }
 
     /**
+     * 删除用户
+     * 
+     * @param userId 用户ID
+     * @return 删除结果
+     */
+    @DeleteMapping("/{userId}")
+    @RequirePermission(1) // 只有店长可以删除用户
+    public ApiResponse<Void> deleteUser(@PathVariable Long userId) {
+        userService.deleteUser(userId);
+        return ApiResponse.ok();
+    }
+
+    /**
      * 用户更新请求DTO
      */
     public static class UserUpdateRequest {

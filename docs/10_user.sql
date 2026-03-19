@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS user (
 -- 测试用户（密码：123456；BCrypt哈希，与你现有脚本保持一致）
 INSERT INTO user (username, last_name, phone, password, gender, member_no, amount, discount, permission_level, status)
 VALUES
-  ('8001', '张', '13800138001', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVEFDa', 1, '202401011200001', 1000.00, 0.95, 1, 0),
-  ('8002', '李', '13800138002', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVEFDa', 1, '202401011200012', 500.00, 0.90, 2, 0),
-  ('8003', '王', '13800138003', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVEFDa', 2, '202401011200023', 800.00, 0.85, 3, 0),
-  ('8004', '赵', '13800138004', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVEFDa', 1, '202401011200034', 0.00, NULL, 4, 0);
+  ('8001', '张', '13800138001', '123456', 1, '202401011200001', 1000.00, 0.95, 1, 0),
+  ('8002', '李', '13800138002', '123456', 1, '202401011200012', 500.00, 0.90, 2, 0),
+  ('8003', '王', '13800138003', '123456', 2, '202401011200023', 800.00, 0.85, 3, 0),
+  ('8004', '赵', '13800138004', '123456', 1, '202401011200034', 0.00, NULL, 4, 0);

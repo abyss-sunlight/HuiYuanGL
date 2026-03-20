@@ -1,0 +1,96 @@
+<view class="container">
+  <!-- 头部信息 -->
+  <view class="header">
+    <view class="title">🤖 AI数据分析</view>
+    <view class="subtitle">基于门店数据的智能分析助手</view>
+  </view>
+
+  <!-- 时间范围选择 -->
+  <view class="time-range-section">
+    <view class="section-title">分析时间范围</view>
+    <picker mode="selector" range="{{timeRanges}}" range-key="label" value="0" bindchange="onTimeRangeChange">
+      <view class="time-picker">
+        <text class="picker-label">时间范围：</text>
+        <text class="picker-value">{{timeRanges[0].label}}</text>
+        <text class="picker-arrow">▼</text>
+      </view>
+    </picker>
+  </view>
+
+  <!-- 快速分析选项 -->
+  <view class="quick-section">
+    <view class="section-title">快速分析</view>
+    <view class="options-grid">
+      <view class="option-card" wx:for="{{quickOptions}}" wx:key="type" 
+            bindtap="onQuickAnalysis" data-type="{{item.type}}" data-question="{{item.question}}">
+        <view class="option-icon">{{item.icon}}</view>
+        <view class="option-title">{{item.title}}</view>
+        <view class="option-desc">{{item.question}}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 自定义问题 -->
+  <view class="custom-section">
+    <view class="custom-header">
+      <view class="section-title">自定义问题</view>
+      <button class="custom-btn" bindtap="showCustomInput">📝 自定义提问</button>
+    </view>
+  </view>
+
+  <!-- 分析结果 -->
+  <view class="analysis-result" wx:if="{{analysisResult}}">
+    <view class="result-header">
+      <view class="result-title">📊 AI分析结果</view>
+      <view class="result-actions">
+        <button class="action-btn" bindtap="copyResult">📋 复制</button>
+        <button class="action-btn" bindtap="shareResult">📤 分享</button>
+        <button class="action-btn" bindtap="reanalyze">🔄 重新分析</button>
+      </view>
+    </view>
+    <view class="result-content">
+      <text class="result-text">{{analysisResult}}</text>
+    </view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading-section" wx:if="{{isLoading}}">
+    <view class="loading-content">
+      <view class="loading-icon">🤖</view>
+      <view class="loading-text">AI正在分析数据中...</view>
+      <view class="loading-tips">这可能需要几秒钟时间</view>
+    </view>
+  </view>
+</view>
+
+<!-- 自定义问题输入弹窗 -->
+<view class="modal-overlay" wx:if="{{showCustomInput}}" bindtap="hideCustomInput">
+  <view class="modal-content" catchtap="stopPropagation">
+    <view class="modal-header">
+      <text class="modal-title">自定义问题</text>
+      <text class="modal-close" bindtap="hideCustomInput">×</text>
+    </view>
+    
+    <view class="modal-body">
+      <view class="form-group">
+        <text class="form-label">请输入您的问题</text>
+        <textarea class="form-textarea" placeholder="例如：本周美甲项目的收入如何？" 
+                  value="{{customQuestion}}" bindinput="onCustomQuestionInput" 
+                  maxlength="200" auto-height />
+      </view>
+      
+      <view class="tips">
+        <text class="tips-title">💡 提问技巧：</text>
+        <text class="tips-content">• 询问营收、利润情况</text>
+        <text class="tips-content">• 分析项目收入排名</text>
+        <text class="tips-content">• 了解会员消费趋势</text>
+        <text class="tips-content">• 对比不同时间段数据</text>
+      </view>
+    </view>
+    
+    <view class="modal-footer">
+      <button class="modal-btn cancel-btn" bindtap="hideCustomInput">取消</button>
+      <button class="modal-btn confirm-btn" bindtap="submitCustomQuestion">提交分析</button>
+    </view>
+  </view>
+</view>

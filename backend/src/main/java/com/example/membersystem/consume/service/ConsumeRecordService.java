@@ -13,7 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -214,14 +216,14 @@ public class ConsumeRecordService {
     }
 
     /**
-     * 根据日期范围查找记录
+     * 根据日期范围查找消费记录（LocalDate版本）
      * 
      * @param startDate 开始日期
      * @param endDate 结束日期
-     * @return 记录列表
+     * @return 消费记录列表
      */
     @Transactional(readOnly = true)
-    public List<ConsumeRecord> findByDateRange(LocalDate startDate, LocalDate endDate) {
+    public List<ConsumeRecord> findConsumeRecordsByDateRange(LocalDate startDate, LocalDate endDate) {
         return consumeRecordRepository.findByDateRangeOrderByCreatedAtDesc(startDate, endDate);
     }
 
@@ -388,5 +390,34 @@ public class ConsumeRecordService {
         if (!record.getConsumeType().equals("支出") && !record.getConsumeType().equals("充值")) {
             throw new IllegalArgumentException("消费类型必须是'支出'或'充值'");
         }
+    }
+
+    /**
+     * 根据日期范围查询消费记录
+     * 
+     * @param startDate 开始日期 (格式: yyyy-MM-dd)
+     * @param endDate 结束日期 (格式: yyyy-MM-dd)
+     * @return 消费记录列表
+     */
+    @Transactional(readOnly = true)
+    public List<Map<String, Object>> findByDateRange(String startDate, String endDate) {
+        List<ConsumeRecord> records = consumeRecordRepository.findByConsumeDateBetween(startDate, endDate);
+        
+        return records.stream()
+                .map(record -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("id", record.getId());
+                    map.put("phone", record.getPhone());
+                    map.put("last_name", record.getLastName());
+                    map.put("gender", record.getGender());
+                    map.put("balance", record.getBalance());
+                    map.put("consume_amount", record.getConsumeAmount());
+                    map.put("consume_item", record.getConsumeItem());
+                    map.put("consume_date", record.getConsumeDate());
+                    map.put("consume_type", record.getConsumeType());
+                    map.put("created_at", record.getCreatedAt());
+                    return map;
+                })
+                .collect(java.util.stream.Collectors.toList());
     }
 }

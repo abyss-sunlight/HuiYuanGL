@@ -252,7 +252,7 @@ public class ConsumeRecordController {
             } else if (consumeType != null) {
                 records = consumeRecordService.findByConsumeType(consumeType);
             } else if (start != null && end != null) {
-                records = consumeRecordService.findByDateRange(start, end);
+                records = consumeRecordService.findConsumeRecordsByDateRange(start, end);
             } else {
                 // 如果没有指定查询条件，根据权限返回记录
                 if (currentUser != null && currentUser.getPermissionLevel() >= 3) {

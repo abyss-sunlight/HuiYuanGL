@@ -138,4 +138,15 @@ public interface ConsumeRecordRepository extends JpaRepository<ConsumeRecord, Lo
      */
     @Query("SELECT cr FROM ConsumeRecord cr ORDER BY cr.createdAt DESC")
     List<ConsumeRecord> findAllByOrderByCreatedAtDesc();
+
+    /**
+     * 根据日期范围查找记录（字符串日期）
+     * 
+     * @param startDate 开始日期 (格式: yyyy-MM-dd)
+     * @param endDate 结束日期 (格式: yyyy-MM-dd)
+     * @return 消费记录列表
+     */
+    @Query("SELECT cr FROM ConsumeRecord cr WHERE FUNCTION('DATE', cr.consumeDate) BETWEEN FUNCTION('DATE', CAST(:startDate AS DATE)) AND FUNCTION('DATE', CAST(:endDate AS DATE)) ORDER BY cr.createdAt DESC")
+    List<ConsumeRecord> findByConsumeDateBetween(@Param("startDate") String startDate, 
+                                                @Param("endDate") String endDate);
 }

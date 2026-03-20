@@ -5,7 +5,8 @@
     "pages/profile/profile",
     "pages/set-password/set-password",
     "pages/members/members",
-    "pages/discount-management/discount-management"
+    "pages/discount-management/discount-management",
+    "pages/ai-analysis/ai-analysis"
   ],
   "window": {
     "navigationBarTitleText": "会员管理系统",

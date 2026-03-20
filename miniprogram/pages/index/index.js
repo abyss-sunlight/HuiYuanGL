@@ -305,9 +305,9 @@ Page({
       return
     }
 
-    wx.showToast({
-      title: '报表功能开发中',
-      icon: 'none'
+    // 跳转到AI分析页面
+    wx.navigateTo({
+      url: '/pages/ai-analysis/ai-analysis'
     })
   }
 })

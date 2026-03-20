@@ -27,3 +27,9 @@ logging:
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
+
+yuanqi:
+  api-url: https://yuanqi.tencent.com/openapi/v1/agent/chat/completions
+  app-id: 2033772830773034880 # 从腾讯元器获取
+  app-key: LHYQtxsNKRi7Jw9x0cLZ0GVtm613VR7Y       # 从腾讯元器获取
+

@@ -3,9 +3,11 @@ package com.example.membersystem.auth.controller;
 import com.example.membersystem.auth.dto.LoginResponse;
 import com.example.membersystem.auth.dto.SmsLoginRequest;
 import com.example.membersystem.auth.dto.PasswordLoginRequest;
+import com.example.membersystem.auth.dto.WxLoginRequest;
 import com.example.membersystem.auth.dto.SetPasswordRequest;
 import com.example.membersystem.auth.service.AuthService;
 import com.example.membersystem.common.ApiResponse;
+import com.example.membersystem.common.BusinessException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
@@ -132,5 +134,48 @@ public class AuthController {
     public ApiResponse<Void> setPassword(@RequestBody SetPasswordRequest request) {
         authService.setPassword(request);
         return ApiResponse.ok();
+    }
+
+    /**
+     * 微信登录接口
+     * 
+     * 处理用户使用微信授权的登录请求
+     * 验证微信登录凭证的有效性，生成JWT令牌
+     * 
+     * @param request 微信登录请求，包含code和userInfo
+     * @return 登录响应，包含JWT令牌和用户信息
+     * @throws BusinessException 当微信凭证无效或处理失败时抛出
+     */
+    @PostMapping("/wx-login")
+    @Operation(summary = "微信登录", description = "使用微信授权登录")
+    public ApiResponse<LoginResponse> wxLogin(@RequestBody WxLoginRequest request) {
+        System.out.println("=== AuthController 微信登录请求 ===");
+        System.out.println("请求体: " + request);
+        
+        try {
+            // 调用服务层处理微信登录逻辑
+            LoginResponse response = authService.wxLogin(request);
+            System.out.println("微信登录成功，返回响应");
+            return ApiResponse.ok(response);
+        } catch (BusinessException e) {
+            // 处理业务异常，特别是新用户需要补充信息的情况
+            System.out.println("微信登录业务异常: " + e.getMessage());
+            System.out.println("异常状态码: " + e.getCode());
+            
+            if (e.getCode() == 201) {
+                // 新用户需要补充信息
+                return ApiResponse.fail(201, e.getMessage());
+            } else {
+                // 其他业务异常
+                return ApiResponse.fail(e.getCode(), e.getMessage());
+            }
+        } catch (Exception e) {
+            // 记录错误日志并重新抛出异常
+            System.err.println("微信登录过程中发生未知错误: " + e.getMessage());
+            e.printStackTrace();
+            
+            // 返回通用错误响应
+            return ApiResponse.fail(500, "微信登录失败，请稍后重试");
+        }
     }
 }

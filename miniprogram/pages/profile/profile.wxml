@@ -18,6 +18,13 @@
         <view class="method-desc">新用户自动注册，老用户直接登录</view>
       </view>
 
+      <!-- 微信登录 -->
+      <view class="method-item" bindtap="wxLogin">
+        <view class="icon wx-icon">💚</view>
+        <view class="method-name">微信登录</view>
+        <view class="method-desc">使用微信账号快速登录</view>
+      </view>
+
       <!-- 密码登录 -->
       <view class="method-item" bindtap="showPasswordLogin">
         <view class="icon password-icon">🔐</view>
@@ -102,7 +109,7 @@
     </view>
 
     <view class="menu-list">
-      <view class="menu-item" bindtap="viewUserInfo">
+      <view class="menu-item" bindtap="showPersonalInfo">
         <view class="menu-icon">👤</view>
         <view class="menu-title">个人信息</view>
         <view class="menu-arrow">></view>
@@ -111,18 +118,6 @@
       <view class="menu-item" bindtap="goToSetPassword">
         <view class="menu-icon">🔑</view>
         <view class="menu-title">设置密码</view>
-        <view class="menu-arrow">></view>
-      </view>
-
-      <view class="menu-item" bindtap="viewSettings">
-        <view class="menu-icon">⚙️</view>
-        <view class="menu-title">设置</view>
-        <view class="menu-arrow">></view>
-      </view>
-
-      <view class="menu-item" bindtap="viewHelp">
-        <view class="menu-icon">❓</view>
-        <view class="menu-title">帮助与反馈</view>
         <view class="menu-arrow">></view>
       </view>
 
@@ -185,6 +180,125 @@
     <view class="modal-footer">
       <button class="btn secondary" bindtap="cancelRegister">取消</button>
       <button class="btn primary" bindtap="submitRegister">确认提交</button>
+    </view>
+  </view>
+</view>
+
+<!-- 微信新用户注册模态弹窗 -->
+<view class="modal-overlay" wx:if="{{showWxRegisterModal}}">
+  <view class="modal-content wx-register-modal">
+    <view class="modal-header">
+      <text class="modal-title">完善微信登录信息</text>
+      <text class="modal-subtitle">请补充您的姓氏和性别以完成注册</text>
+    </view>
+    
+    <!-- 显示微信用户信息 -->
+    <view class="wx-user-info" wx:if="{{tempWxInfo}}">
+      <view class="wx-avatar">
+        <image class="wx-avatar-img" src="{{tempWxInfo.avatarUrl}}" mode="aspectFill"></image>
+      </view>
+      <view class="wx-user-details">
+        <text class="wx-nickname">{{tempWxInfo.nickName}}</text>
+        <text class="wx-info">微信用户，需要补充信息完成注册</text>
+      </view>
+    </view>
+    
+    <view class="modal-body">
+      <view class="form-group">
+        <text class="form-label">姓氏 *</text>
+        <input class="form-input" placeholder="请输入您的姓氏" 
+               bindinput="onWxLastNameInput" 
+               value="{{wxRegisterForm.lastName}}" 
+               maxlength="10" />
+      </view>
+      
+      <view class="form-group">
+        <text class="form-label">性别 *</text>
+        <radio-group class="radio-group" bindchange="onWxGenderChange">
+          <label class="radio-item" wx:for="{{[{value: 1, name: '男'}, {value: 2, name: '女'}]}}" wx:key="value">
+            <radio value="{{item.value}}" checked="{{wxRegisterForm.gender === item.value}}" />
+            <text class="radio-text">{{item.name}}</text>
+          </label>
+        </radio-group>
+      </view>
+    </view>
+    
+    <view class="modal-footer">
+      <button class="btn secondary" bindtap="hideWxRegisterModal">取消</button>
+      <button class="btn primary" bindtap="submitWxRegister">确认注册</button>
+    </view>
+  </view>
+</view>
+
+<!-- 个人信息编辑模态弹窗 -->
+<view class="modal-overlay" wx:if="{{showPersonalInfoModal}}">
+  <view class="modal-content personal-info-modal">
+    <view class="modal-header">
+      <text class="modal-title">编辑个人信息</text>
+      <text class="modal-subtitle">请完善您的个人资料</text>
+    </view>
+    
+    <view class="modal-body">
+      <!-- 头像选择 -->
+      <view class="form-group">
+        <text class="form-label">头像</text>
+        <view class="current-avatar-container">
+          <view class="current-avatar" bindtap="toggleAvatarSelector">
+            <image wx:if="{{personalInfoForm.avatarUrl}}" 
+                   class="current-avatar-img" 
+                   src="{{personalInfoForm.avatarUrl}}" 
+                   mode="aspectFill" />
+            <view wx:else class="current-avatar-placeholder">
+              <text class="placeholder-icon">👤</text>
+            </view>
+            <view class="avatar-edit-hint">点击更换头像</view>
+          </view>
+        </view>
+        
+        <!-- 头像选择器 -->
+        <view class="avatar-options {{showAvatarOptions ? 'show' : ''}}" wx:if="{{showAvatarOptions}}">
+          <view class="avatar-item" wx:for="{{avatarOptions}}" wx:key="index" 
+                bindtap="selectAvatar" data-index="{{index}}">
+            <image class="avatar-img {{personalInfoForm.avatarUrl === item ? 'selected' : ''}}" 
+                   src="{{item}}" mode="aspectFill" />
+            <view class="avatar-check" wx:if="{{personalInfoForm.avatarUrl === item}}">✓</view>
+          </view>
+        </view>
+      </view>
+      
+      <!-- 用户名 -->
+      <view class="form-group">
+        <text class="form-label">用户名</text>
+        <input class="form-input" placeholder="请输入用户名" 
+               bindinput="onUsernameInput" 
+               value="{{personalInfoForm.username}}" 
+               maxlength="20" />
+      </view>
+      
+      <!-- 姓氏 -->
+      <view class="form-group">
+        <text class="form-label">姓氏</text>
+        <input class="form-input" placeholder="请输入姓氏" 
+               bindinput="onLastNameInput" 
+               value="{{personalInfoForm.lastName}}" 
+               maxlength="10" />
+      </view>
+      
+      <!-- 性别 -->
+      <view class="form-group">
+        <text class="form-label">性别</text>
+        <radio-group class="radio-group" bindchange="onGenderChange">
+          <label class="radio-item" wx:for="{{[{value: 1, name: '男'}, {value: 2, name: '女'}]}}" wx:key="value">
+            <radio value="{{item.value}}" checked="{{personalInfoForm.gender === item.value}}" />
+            <text class="radio-text">{{item.name}}</text>
+          </label>
+        </radio-group>
+      </view>
+    </view>
+    
+    <view class="modal-footer">
+      <button class="btn secondary" bindtap="hidePersonalInfoModal">取消</button>
+      <button class="btn primary" bindtap="submitPersonalInfo">保存</button>
     </view>
   </view>
 </view>

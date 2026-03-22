@@ -15,6 +15,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByPhone(String phone);
 
+    Optional<User> findByOpenid(String openid);
+
     boolean existsByPhone(String phone);
 
     @Query("SELECT u FROM User u " +

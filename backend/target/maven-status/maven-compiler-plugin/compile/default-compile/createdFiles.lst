@@ -1,14 +1,17 @@
 com\example\membersystem\auth\util\JwtUtil.class
 com\example\membersystem\auth\controller\AuthController.class
 com\example\membersystem\eyelash\repo\EyelashRecordRepository.class
+com\example\membersystem\auth\dto\WxLoginRequest.class
 com\example\membersystem\auth\config\PasswordEncoderConfig.class
 com\example\membersystem\carousel\service\CarouselContentService.class
 com\example\membersystem\eyelash\controller\EyelashRecordController.class
 com\example\membersystem\health\HealthController.class
 com\example\membersystem\carousel\dto\CarouselContentResponse.class
 com\example\membersystem\carousel\entity\CarouselContent.class
+com\example\membersystem\auth\dto\WxLoginRequest$WxUserInfo.class
 com\example\membersystem\ai\dto\YuanbaoAIRequest.class
 com\example\membersystem\auth\dto\PasswordLoginRequest.class
+com\example\membersystem\user\dto\ProfileUpdateRequest.class
 com\example\membersystem\config\CorsConfig.class
 com\example\membersystem\discount\repo\RechargeDiscountRepository.class
 com\example\membersystem\ai\dto\YuanbaiAIResponse.class

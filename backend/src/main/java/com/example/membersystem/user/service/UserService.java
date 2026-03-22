@@ -80,6 +80,38 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    /**
+     * 更新当前用户个人信息
+     * 
+     * @param userId 用户ID
+     * @param avatarUrl 头像URL
+     * @param username 用户名
+     * @param lastName 姓氏
+     * @param gender 性别
+     * @return 更新后的用户信息
+     */
+    @Transactional
+    public User updateUserProfile(Long userId, String avatarUrl, String username, String lastName, Integer gender) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("用户不存在"));
+
+        // 更新用户信息
+        if (avatarUrl != null && !avatarUrl.trim().isEmpty()) {
+            user.setAvatarUrl(avatarUrl.trim());
+        }
+        if (username != null && !username.trim().isEmpty()) {
+            user.setUsername(username.trim());
+        }
+        if (lastName != null && !lastName.trim().isEmpty()) {
+            user.setLastName(lastName.trim());
+        }
+        if (gender != null) {
+            user.setGender(gender);
+        }
+
+        return userRepository.save(user);
+    }
+
     private static UserListItemResponse toListItem(User u) {
         UserListItemResponse resp = new UserListItemResponse();
         resp.setUserId(u.getId());

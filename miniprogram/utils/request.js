@@ -20,10 +20,25 @@ function request({ url, method = 'GET', data, header }) {
         ...(header || {})
       },
       success(res) {
-        // 后端约定返回：{ code, message, data }
+        // 后端约定返回：{ code, message, data } 或直接返回业务数据
         const body = res.data
+        
+        // 检查是否是直接返回的业务数据（如LoginResponse）
+        if (body && typeof body === 'object' && body.token) {
+          // 直接返回业务数据（这种情况发生在后端直接返回LoginResponse等对象）
+          resolve(body)
+          return
+        }
+        
+        // 检查是否是ApiResponse包装的格式
         if (body && body.code === 0) {
           resolve(body.data)
+          return
+        }
+        
+        // 处理微信登录新用户需要补充信息的情况
+        if (body && body.code === 201) {
+          resolve(body)  // 直接返回完整的响应，让前端处理
           return
         }
         

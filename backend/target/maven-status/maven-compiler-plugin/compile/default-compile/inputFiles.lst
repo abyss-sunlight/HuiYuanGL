@@ -44,6 +44,7 @@ F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\stats\controll
 F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\stats\dto\StatsResponse.java
 F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\stats\service\StatsService.java
 F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\user\controller\UserController.java
+F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\user\dto\ChangePhoneRequest.java
 F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\user\dto\ProfileUpdateRequest.java
 F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\user\dto\UserListItemResponse.java
 F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\user\entity\User.java

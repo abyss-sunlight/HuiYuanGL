@@ -1,3 +1,4 @@
+com\example\membersystem\user\dto\ChangePhoneRequest.class
 com\example\membersystem\auth\util\JwtUtil.class
 com\example\membersystem\auth\controller\AuthController.class
 com\example\membersystem\eyelash\repo\EyelashRecordRepository.class

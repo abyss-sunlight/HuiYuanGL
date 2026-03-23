@@ -3,6 +3,7 @@ package com.example.membersystem.auth.service;
 import com.example.membersystem.auth.dto.LoginResponse;
 import com.example.membersystem.auth.dto.PasswordLoginRequest;
 import com.example.membersystem.auth.util.JwtUtil;
+import com.example.membersystem.common.BusinessException;
 import com.example.membersystem.user.entity.User;
 import com.example.membersystem.user.repo.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -58,7 +59,7 @@ public class PasswordLoginService {
         User user = userRepository.findByPhone(request.getPhone())
                 .orElseThrow(() -> {
                     System.out.println("用户不存在");
-                    return new RuntimeException("用户不存在");
+                    return new BusinessException(40000, "用户不存在");
                 });
         
         System.out.println("找到用户: " + user);
@@ -93,7 +94,7 @@ public class PasswordLoginService {
      */
     private void validatePassword(User user, String inputPassword) {
         if (!StringUtils.hasText(user.getPassword())) {
-            throw new RuntimeException("未设置密码，请使用短信登录后设置密码");
+            throw new BusinessException(40001, "未设置密码，请使用短信登录后设置密码");
         }
 
         boolean isPasswordValid;
@@ -115,7 +116,7 @@ public class PasswordLoginService {
 
         if (!isPasswordValid) {
             System.out.println("密码错误");
-            throw new RuntimeException("密码错误");
+            throw new BusinessException(40002, "密码错误");
         }
     }
 
@@ -140,7 +141,7 @@ public class PasswordLoginService {
     private void validateUserStatus(User user) {
         if (user.getStatus() == 1) {
             System.out.println("用户状态异常: " + user.getStatus());
-            throw new RuntimeException("账户已被禁用");
+            throw new BusinessException(40003, "账户已被禁用");
         }
     }
 

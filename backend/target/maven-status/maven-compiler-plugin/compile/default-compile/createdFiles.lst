@@ -1,4 +1,3 @@
-com\example\membersystem\user\dto\ChangePhoneRequest.class
 com\example\membersystem\auth\util\JwtUtil.class
 com\example\membersystem\auth\controller\AuthController.class
 com\example\membersystem\eyelash\repo\EyelashRecordRepository.class
@@ -7,6 +6,7 @@ com\example\membersystem\auth\config\PasswordEncoderConfig.class
 com\example\membersystem\carousel\service\CarouselContentService.class
 com\example\membersystem\eyelash\controller\EyelashRecordController.class
 com\example\membersystem\health\HealthController.class
+com\example\membersystem\auth\service\PasswordLoginService.class
 com\example\membersystem\carousel\dto\CarouselContentResponse.class
 com\example\membersystem\carousel\entity\CarouselContent.class
 com\example\membersystem\auth\dto\WxLoginRequest$WxUserInfo.class
@@ -22,6 +22,7 @@ com\example\membersystem\common\BusinessException.class
 com\example\membersystem\user\entity\User.class
 com\example\membersystem\eyelash\entity\EyelashRecord.class
 com\example\membersystem\config\RestTemplateConfig.class
+com\example\membersystem\auth\service\SmsLoginService.class
 com\example\membersystem\consume\controller\ConsumeRecordController.class
 com\example\membersystem\user\service\UserService.class
 com\example\membersystem\auth\dto\SetPasswordRequest.class
@@ -31,6 +32,7 @@ com\example\membersystem\stats\controller\StatsController.class
 com\example\membersystem\consume\entity\ConsumeRecord.class
 com\example\membersystem\user\repo\UserRepository.class
 com\example\membersystem\auth\dto\SmsLoginRequest.class
+com\example\membersystem\auth\service\SmsCodeService$Type.class
 com\example\membersystem\stats\service\StatsService.class
 com\example\membersystem\user\dto\UserListItemResponse.class
 com\example\membersystem\discount\service\RechargeDiscountService.class
@@ -42,6 +44,8 @@ com\example\membersystem\auth\dto\LoginResponse.class
 com\example\membersystem\auth\annotation\RequirePermission.class
 com\example\membersystem\config\WebConfig.class
 com\example\membersystem\ai\service\YuanbaoAIService.class
+com\example\membersystem\auth\service\WxLoginService.class
+com\example\membersystem\auth\dto\ChangePhoneRequest.class
 com\example\membersystem\common\ApiResponse.class
 com\example\membersystem\MemberSystemApplication.class
 com\example\membersystem\consume\repo\ConsumeRecordRepository.class

@@ -115,9 +115,15 @@
         <view class="menu-arrow">></view>
       </view>
 
-      <view class="menu-item" bindtap="goToSetPassword">
+      <view class="menu-item" bindtap="showSetPassword">
         <view class="menu-icon">🔑</view>
         <view class="menu-title">设置密码</view>
+        <view class="menu-arrow">></view>
+      </view>
+
+      <view class="menu-item" bindtap="showChangePhone">
+        <view class="menu-icon">📱</view>
+        <view class="menu-title">修改手机号</view>
         <view class="menu-arrow">></view>
       </view>
 
@@ -299,6 +305,162 @@
     <view class="modal-footer">
       <button class="btn secondary" bindtap="hidePersonalInfoModal">取消</button>
       <button class="btn primary" bindtap="submitPersonalInfo">保存</button>
+    </view>
+  </view>
+</view>
+
+<!-- 密码设置弹窗 -->
+<view class="set-password-modal" wx:if="{{setPasswordData.showSetPasswordModal}}">
+  <view class="set-password-modal-mask" bindtap="onSetPasswordModalMask"></view>
+  <view class="set-password-content" catchtap="">
+    <view class="set-password-header">
+      <view class="set-password-title">设置/重置密码</view>
+      <button class="set-password-close" bindtap="hideSetPassword" catchtap="hideSetPassword">×</button>
+    </view>
+    <view class="set-password-desc">通过短信验证码设置新密码</view>
+
+    <view class="set-password-form form">
+      <view class="form-item">
+        <view class="label">手机号</view>
+        <input
+          class="input"
+          placeholder="请输入手机号"
+          type="number"
+          maxlength="11"
+          value="{{setPasswordData.phone}}"
+          bindinput="onSetPasswordPhoneInput"
+          disabled="{{true}}"
+        />
+      </view>
+
+      <view class="form-item">
+        <view class="label">验证码</view>
+        <view class="code-row">
+          <input
+            class="input code-input"
+            placeholder="请输入6位验证码"
+            type="number"
+            maxlength="6"
+            value="{{setPasswordData.code}}"
+            bindinput="onSetPasswordCodeInput"
+          />
+          <button class="code-btn" bindtap="sendSetPasswordSmsCode" catchtap="sendSetPasswordSmsCode" disabled="{{setPasswordData.codeSending}}">{{setPasswordData.codeText}}</button>
+        </view>
+      </view>
+
+      <view class="form-item">
+        <view class="label">新密码</view>
+        <view class="password-input-container">
+          <input
+            class="input password-input"
+            placeholder="至少6位"
+            password="{{!setPasswordData.showPassword}}"
+            value="{{setPasswordData.newPassword}}"
+            bindinput="onSetPasswordNewPasswordInput"
+          />
+          <text class="password-eye-icon" bindtap="toggleSetPasswordVisibility">{{setPasswordData.showPassword ? '👁️' : '🙈'}}</text>
+        </view>
+      </view>
+
+      <button class="submit-btn" bindtap="submitSetPassword" catchtap="submitSetPassword" loading="{{setPasswordData.submitting}}">确认设置</button>
+    </view>
+  </view>
+</view>
+
+<!-- 手机号修改弹窗 -->
+<view class="change-phone-modal {{changePhoneData.currentStep === 2 ? 'current-step-2' : ''}}" wx:if="{{changePhoneData.showChangePhoneModal}}">
+  <view class="change-phone-modal-mask" bindtap="onChangePhoneModalMask"></view>
+  <view class="change-phone-content" catchtap="">
+    <view class="change-phone-header">
+      <view class="change-phone-title">修改手机号</view>
+      <button class="change-phone-close" bindtap="hideChangePhone" catchtap="hideChangePhone">×</button>
+    </view>
+
+    <!-- 步骤指示器 -->
+    <view class="step-indicator">
+      <view class="step-item {{changePhoneData.currentStep === 1 ? 'active' : 'completed'}}">
+        <view class="step-number">{{changePhoneData.currentStep === 1 ? '1' : '✓'}}</view>
+        <text>验证原手机号</text>
+      </view>
+      <view class="step-line {{changePhoneData.currentStep === 2 ? 'completed' : ''}}"></view>
+      <view class="step-item {{changePhoneData.currentStep === 2 ? 'active' : ''}}">
+        <view class="step-number">2</view>
+        <text>设置新手机号</text>
+      </view>
+    </view>
+
+    <!-- 步骤1：验证原手机号 -->
+    <view class="step-1-content">
+      <view class="change-phone-desc">请验证当前手机号以继续</view>
+      
+      <view class="change-phone-form form">
+        <view class="form-item">
+          <view class="label">原手机号</view>
+          <input
+            class="input"
+            type="number"
+            maxlength="11"
+            value="{{changePhoneData.originalPhone}}"
+            disabled="{{true}}"
+          />
+        </view>
+
+        <view class="form-item">
+          <view class="label">验证码</view>
+          <view class="code-row">
+            <input
+              class="input code-input"
+              placeholder="请输入6位验证码"
+              type="number"
+              maxlength="6"
+              value="{{changePhoneData.originalCode}}"
+              bindinput="onOriginalCodeInput"
+            />
+            <button class="code-btn" bindtap="sendOriginalSmsCode" catchtap="sendOriginalSmsCode" disabled="{{changePhoneData.originalCodeSending}}">{{changePhoneData.originalCodeText}}</button>
+          </view>
+        </view>
+
+        <button class="step-btn" bindtap="verifyOriginalPhone" catchtap="verifyOriginalPhone" loading="{{changePhoneData.submitting}}">下一步</button>
+      </view>
+    </view>
+
+    <!-- 步骤2：设置新手机号 -->
+    <view class="step-2-content">
+      <view class="change-phone-desc">请输入新的手机号码</view>
+      
+      <view class="change-phone-form form">
+        <view class="form-item">
+          <view class="label">新手机号</view>
+          <input
+            class="input"
+            placeholder="请输入新手机号"
+            type="number"
+            maxlength="11"
+            value="{{changePhoneData.newPhone}}"
+            bindinput="onNewPhoneInput"
+          />
+        </view>
+
+        <view class="form-item">
+          <view class="label">验证码</view>
+          <view class="code-row">
+            <input
+              class="input code-input"
+              placeholder="请输入6位验证码"
+              type="number"
+              maxlength="6"
+              value="{{changePhoneData.newCode}}"
+              bindinput="onNewCodeInput"
+            />
+            <button class="code-btn" bindtap="sendNewSmsCode" catchtap="sendNewSmsCode" disabled="{{changePhoneData.newCodeSending}}">{{changePhoneData.newCodeText}}</button>
+          </view>
+        </view>
+
+        <view class="button-row">
+          <button class="step-btn secondary" bindtap="backToStep1" catchtap="backToStep1">上一步</button>
+          <button class="step-btn" bindtap="submitPhoneChange" catchtap="submitPhoneChange" loading="{{changePhoneData.submitting}}">确认修改</button>
+        </view>
+      </view>
     </view>
   </view>
 </view>

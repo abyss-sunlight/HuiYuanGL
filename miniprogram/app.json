@@ -3,7 +3,6 @@
     "pages/index/index",
     "pages/records/records",
     "pages/profile/profile",
-    "pages/set-password/set-password",
     "pages/members/members",
     "pages/discount-management/discount-management",
     "pages/ai-analysis/ai-analysis"

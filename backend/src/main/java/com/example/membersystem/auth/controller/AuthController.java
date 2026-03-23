@@ -1,5 +1,6 @@
 package com.example.membersystem.auth.controller;
 
+import com.example.membersystem.auth.dto.ChangePhoneRequest;
 import com.example.membersystem.auth.dto.LoginResponse;
 import com.example.membersystem.auth.dto.SmsLoginRequest;
 import com.example.membersystem.auth.dto.PasswordLoginRequest;
@@ -176,6 +177,94 @@ public class AuthController {
             
             // 返回通用错误响应
             return ApiResponse.fail(500, "微信登录失败，请稍后重试");
+        }
+    }
+
+    /**
+     * 发送原手机号验证码接口
+     * 用于修改手机号时验证当前手机号
+     */
+    @PostMapping("/send-original-sms")
+    @Operation(summary = "发送原手机号验证码", description = "修改手机号时验证当前手机号")
+    public ApiResponse<Void> sendOriginalSms(@RequestBody Map<String, String> request) {
+        System.out.println("=== AuthController 发送原手机号验证码请求 ===");
+        System.out.println("请求体: " + request);
+        
+        try {
+            String phone = request.get("phone");
+            authService.sendOriginalSms(phone);
+            System.out.println("发送原手机号验证码成功");
+            return ApiResponse.ok();
+        } catch (Exception e) {
+            System.out.println("发送原手机号验证码失败: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    /**
+     * 验证原手机号接口
+     * 用于修改手机号时验证原手机号验证码
+     */
+    @PostMapping("/verify-original-phone")
+    @Operation(summary = "验证原手机号", description = "验证原手机号验证码")
+    public ApiResponse<Void> verifyOriginalPhone(@RequestBody Map<String, String> request) {
+        System.out.println("=== AuthController 验证原手机号请求 ===");
+        System.out.println("请求体: " + request);
+        
+        try {
+            String phone = request.get("phone");
+            String code = request.get("code");
+            authService.verifyOriginalPhone(phone, code);
+            System.out.println("验证原手机号成功");
+            return ApiResponse.ok();
+        } catch (Exception e) {
+            System.out.println("验证原手机号失败: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    /**
+     * 发送新手机号验证码接口
+     * 用于修改手机号时验证新手机号
+     */
+    @PostMapping("/send-new-sms")
+    @Operation(summary = "发送新手机号验证码", description = "修改手机号时验证新手机号")
+    public ApiResponse<Void> sendNewSms(@RequestBody Map<String, String> request) {
+        System.out.println("=== AuthController 发送新手机号验证码请求 ===");
+        System.out.println("请求体: " + request);
+        
+        try {
+            String phone = request.get("phone");
+            authService.sendNewSms(phone);
+            System.out.println("发送新手机号验证码成功");
+            return ApiResponse.ok();
+        } catch (Exception e) {
+            System.out.println("发送新手机号验证码失败: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    /**
+     * 修改手机号接口
+     * 通过双重验证码验证修改手机号
+     */
+    @PostMapping("/change-phone")
+    @Operation(summary = "修改手机号", description = "通过验证码修改用户手机号")
+    public ApiResponse<Void> changePhone(@RequestBody ChangePhoneRequest request) {
+        System.out.println("=== AuthController 修改手机号请求 ===");
+        System.out.println("请求体: " + request);
+        
+        try {
+            authService.changePhone(request);
+            System.out.println("修改手机号成功");
+            return ApiResponse.ok();
+        } catch (Exception e) {
+            System.out.println("修改手机号失败: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
         }
     }
 }

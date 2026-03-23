@@ -6,6 +6,7 @@ F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\auth\annotatio
 F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\auth\config\AuthConfig.java
 F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\auth\config\PasswordEncoderConfig.java
 F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\auth\controller\AuthController.java
+F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\auth\dto\ChangePhoneRequest.java
 F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\auth\dto\LoginResponse.java
 F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\auth\dto\PasswordLoginRequest.java
 F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\auth\dto\SetPasswordRequest.java
@@ -13,7 +14,10 @@ F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\auth\dto\SmsLo
 F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\auth\dto\WxLoginRequest.java
 F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\auth\interceptor\AuthInterceptor.java
 F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\auth\service\AuthService.java
+F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\auth\service\PasswordLoginService.java
 F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\auth\service\SmsCodeService.java
+F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\auth\service\SmsLoginService.java
+F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\auth\service\WxLoginService.java
 F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\auth\util\JwtUtil.java
 F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\carousel\controller\CarouselContentController.java
 F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\carousel\dto\CarouselContentResponse.java
@@ -44,7 +48,6 @@ F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\stats\controll
 F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\stats\dto\StatsResponse.java
 F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\stats\service\StatsService.java
 F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\user\controller\UserController.java
-F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\user\dto\ChangePhoneRequest.java
 F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\user\dto\ProfileUpdateRequest.java
 F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\user\dto\UserListItemResponse.java
 F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\user\entity\User.java

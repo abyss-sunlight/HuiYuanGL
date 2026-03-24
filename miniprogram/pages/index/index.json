@@ -1,3 +1,6 @@
 {
-  "navigationBarTitleText": "首页"
+  "navigationBarTitleText": "首页",
+  "usingComponents": {
+    "ai-customer-service": "/components/ai-customer-service/ai-customer-service"
+  }
 }

@@ -114,4 +114,7 @@
       <text class="btn-text">查看报表</text>
     </button>
   </view>
+
+  <!-- AI客服悬浮窗 -->
+  <ai-customer-service id="aiService" userInfo="{{userInfo}}" bind:message="handleAIMessage"></ai-customer-service>
 </view>

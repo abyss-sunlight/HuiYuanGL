@@ -1,0 +1,96 @@
+<!-- AI客服悬浮窗 -->
+<view class="ai-customer-service">
+  <!-- 悬浮按钮 -->
+  <view 
+    class="float-button {{isVisible ? 'hidden' : ''}}" 
+    style="right: {{position.right}}; bottom: {{position.bottom}};"
+    bindtap="toggleChat"
+  >
+    <image class="ai-icon" src="/images/AI.jpeg" mode="aspectFit"></image>
+    <view class="ai-text">AI</view>
+    <!-- 未读消息提示 -->
+    <view class="unread-badge" wx:if="{{unreadCount > 0}}">{{unreadCount}}</view>
+  </view>
+
+  <!-- 聊天界面 -->
+  <view class="chat-container {{isVisible ? 'show' : 'hidden'}}">
+    <!-- 遮罩层 -->
+    <view class="mask" bindtap="hideChat"></view>
+    
+    <!-- 聊天窗口 -->
+    <view class="chat-window">
+      <!-- 头部 -->
+      <view class="chat-header">
+        <view class="header-title">AI客服助手</view>
+        <view class="header-close" bindtap="hideChat">×</view>
+      </view>
+      
+      <!-- 消息区域 -->
+      <scroll-view 
+        class="message-area" 
+        scroll-y="true" 
+        scroll-into-view="{{scrollIntoView}}"
+        scroll-with-animation="true"
+      >
+        <!-- 欢迎消息 -->
+        <view class="message-item ai-message" wx:if="{{messages.length === 0}}">
+          <view class="message-content">
+            <text>您好！我是美甲美睫门店的AI客服助手，有什么可以帮助您的吗？</text>
+          </view>
+        </view>
+        
+        <!-- 消息列表 -->
+        <view 
+          class="message-item {{item.role === 'user' ? 'user-message' : 'ai-message'}}" 
+          wx:for="{{messages}}" 
+          wx:key="id"
+          id="msg-{{item.id}}"
+        >
+          <view class="message-content">
+            <text>{{item.content}}</text>
+          </view>
+          <view class="message-time">{{item.time}}</view>
+        </view>
+        
+        <!-- 加载状态 -->
+        <view class="message-item ai-message" wx:if="{{isLoading}}">
+          <view class="message-content loading">
+            <text>正在思考中...</text>
+          </view>
+        </view>
+      </scroll-view>
+      
+      <!-- 快捷问题 -->
+      <view class="quick-questions" wx:if="{{quickQuestions.length > 0 && !isLoading}}">
+        <view 
+          class="quick-question-item" 
+          wx:for="{{quickQuestions}}" 
+          wx:key="*this"
+          bindtap="sendQuickQuestion"
+          data-question="{{item}}"
+        >
+          {{item}}
+        </view>
+      </view>
+      
+      <!-- 输入区域 -->
+      <view class="input-area">
+        <input 
+          class="message-input" 
+          placeholder="请输入您的问题..." 
+          value="{{inputValue}}"
+          bindinput="onInputChange"
+          bindconfirm="sendMessage"
+          confirm-type="send"
+        />
+        <button 
+          class="send-button {{inputValue.trim() ? 'active' : ''}}" 
+          bindtap="sendMessage"
+          disabled="{{!inputValue.trim() || isLoading}}"
+        >
+          发送
+        </button>
+      </view>
+    </view>
+  </view>
+</view>

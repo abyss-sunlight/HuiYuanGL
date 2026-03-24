@@ -309,5 +309,93 @@ Page({
     wx.navigateTo({
       url: '/pages/ai-analysis/ai-analysis'
     })
+  },
+
+  /**
+   * 处理AI客服消息
+   */
+  handleAIMessage(e) {
+    const { type, data } = e.detail
+    
+    switch(type) {
+      case 'navigate':
+        // 处理页面跳转请求
+        this.handleAINavigation(data)
+        break
+      case 'contact':
+        // 处理联系店长请求
+        this.handleContactManager(data)
+        break
+      case 'ai-response':
+        // 处理AI回复（可以在这里添加特殊逻辑）
+        console.log('AI回复:', data)
+        break
+      default:
+        console.log('AI消息:', data)
+    }
+  },
+
+  /**
+   * AI导航处理
+   */
+  handleAINavigation(page) {
+    if (!page || !page.url) {
+      return
+    }
+
+    wx.showModal({
+      title: '页面跳转',
+      content: `AI助手建议您跳转到${page.name || '相关页面'}，是否前往？`,
+      success: (res) => {
+        if (res.confirm) {
+          // 判断是否为tabBar页面
+          if (page.url.includes('/pages/profile/profile') || 
+              page.url.includes('/pages/records/records')) {
+            wx.switchTab({ url: page.url })
+          } else {
+            wx.navigateTo({ url: page.url })
+          }
+        }
+      }
+    })
+  },
+
+  /**
+   * 联系店长处理
+   */
+  handleContactManager(data) {
+    const contact = data?.contact || '18726685085'
+    
+    wx.showModal({
+      title: '联系店长',
+      content: `店长联系方式：${contact}\n\n是否拨打电话？`,
+      confirmText: '拨打',
+      cancelText: '复制',
+      success: (res) => {
+        if (res.confirm) {
+          // 拨打电话
+          wx.makePhoneCall({
+            phoneNumber: contact,
+            fail: () => {
+              wx.showToast({
+                title: '拨打失败，请手动拨号',
+                icon: 'none'
+              })
+            }
+          })
+        } else if (res.cancel) {
+          // 复制到剪贴板
+          wx.setClipboardData({
+            data: contact,
+            success: () => {
+              wx.showToast({
+                title: '联系方式已复制',
+                icon: 'success'
+              })
+            }
+          })
+        }
+      }
+    })
   }
 })

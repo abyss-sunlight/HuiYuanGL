@@ -33,3 +33,10 @@ yuanqi:
   app-id: 2033772830773034880 # 从腾讯元器获取
   app-key: LHYQtxsNKRi7Jw9x0cLZ0GVtm613VR7Y       # 从腾讯元器获取
 
+# AI客服配置
+customer-service:
+  ai:
+    api-url: https://yuanqi.tencent.com/openapi/v1/agent/chat/completions
+    app-id: 2036301370614053632
+    app-key: AUaRrLgsYXAQZUh45Xww7eSTmRAmgD63
+

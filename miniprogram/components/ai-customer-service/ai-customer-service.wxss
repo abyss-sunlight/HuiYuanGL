@@ -1,0 +1,318 @@
+/* AI客服悬浮窗组件样式 */
+
+.ai-customer-service {
+  position: fixed;
+  z-index: 9999;
+}
+
+/* 悬浮按钮 */
+.float-button {
+  position: fixed;
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #007aff 0%, #5ac8fa 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8rpx 24rpx rgba(0, 122, 255, 0.3);
+  transition: all 0.3s ease;
+  z-index: 10000;
+}
+
+.float-button:active {
+  transform: scale(0.95);
+}
+
+.float-button.hidden {
+  opacity: 0;
+  transform: scale(0);
+  pointer-events: none;
+}
+
+.ai-icon {
+  width: 60rpx;
+  height: 60rpx;
+  margin-bottom: 4rpx;
+}
+
+.ai-text {
+  font-size: 20rpx;
+  color: white;
+  font-weight: bold;
+}
+
+/* 未读消息徽章 */
+.unread-badge {
+  position: absolute;
+  top: -10rpx;
+  right: -10rpx;
+  background: #ff3b30;
+  color: white;
+  font-size: 20rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 20rpx;
+  min-width: 32rpx;
+  text-align: center;
+  line-height: 1;
+}
+
+/* 聊天容器 */
+.chat-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chat-container.hidden {
+  display: none;
+}
+
+.chat-container.show {
+  display: flex;
+}
+
+/* 遮罩层 */
+.mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  animation: fadeIn 0.3s ease;
+  z-index: 1;
+}
+
+/* 聊天窗口 */
+.chat-window {
+  width: 85%;
+  height: 70%;
+  background: white;
+  border-radius: 24rpx;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideUp 0.3s ease;
+  box-shadow: 0 20rpx 60rpx rgba(0, 0, 0, 0.2);
+  z-index: 2;
+  position: relative;
+}
+
+/* 头部 */
+.chat-header {
+  height: 100rpx;
+  background: linear-gradient(135deg, #007aff 0%, #5ac8fa 100%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 30rpx;
+  color: white;
+}
+
+.header-title {
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+.header-close {
+  font-size: 48rpx;
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.header-close:active {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* 消息区域 */
+.message-area {
+  flex: 1;
+  padding: 20rpx;
+  background: #f8f9fa;
+  overflow-y: auto;
+}
+
+/* 消息项 */
+.message-item {
+  margin-bottom: 20rpx;
+  display: flex;
+  flex-direction: column;
+}
+
+.message-item.user-message {
+  align-items: flex-end;
+}
+
+.message-item.ai-message {
+  align-items: flex-start;
+}
+
+.message-content {
+  max-width: 80%;
+  padding: 20rpx 24rpx;
+  border-radius: 20rpx;
+  font-size: 28rpx;
+  line-height: 1.5;
+  word-wrap: break-word;
+}
+
+.user-message .message-content {
+  background: #007aff;
+  color: white;
+  border-bottom-right-radius: 8rpx;
+}
+
+.ai-message .message-content {
+  background: white;
+  color: #333;
+  border: 1rpx solid #e9ecef;
+  border-bottom-left-radius: 8rpx;
+}
+
+.message-content.loading {
+  opacity: 0.7;
+  font-style: italic;
+}
+
+.message-time {
+  font-size: 20rpx;
+  color: #999;
+  margin-top: 8rpx;
+  padding: 0 10rpx;
+}
+
+.user-message .message-time {
+  text-align: right;
+}
+
+.ai-message .message-time {
+  text-align: left;
+}
+
+/* 快捷问题 */
+.quick-questions {
+  padding: 20rpx;
+  background: white;
+  border-top: 1rpx solid #e9ecef;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.quick-question-item {
+  background: #f1f3f4;
+  color: #5f6368;
+  padding: 16rpx 24rpx;
+  border-radius: 32rpx;
+  font-size: 26rpx;
+  transition: all 0.2s ease;
+}
+
+.quick-question-item:active {
+  background: #e8eaed;
+  transform: scale(0.95);
+}
+
+/* 输入区域 */
+.input-area {
+  padding: 20rpx;
+  background: white;
+  border-top: 1rpx solid #e9ecef;
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.message-input {
+  flex: 1;
+  height: 72rpx;
+  background: #f8f9fa;
+  border: 1rpx solid #e9ecef;
+  border-radius: 36rpx;
+  padding: 0 24rpx;
+  font-size: 28rpx;
+}
+
+.message-input:focus {
+  background: white;
+  border-color: #007aff;
+}
+
+.send-button {
+  width: 120rpx;
+  height: 72rpx;
+  background: #e9ecef;
+  color: #999;
+  border: none;
+  border-radius: 36rpx;
+  font-size: 28rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.send-button.active {
+  background: #007aff;
+  color: white;
+}
+
+.send-button:active {
+  transform: scale(0.95);
+}
+
+.send-button[disabled] {
+  opacity: 0.5;
+}
+
+/* 动画 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(100rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 响应式适配 */
+@media (max-width: 750rpx) {
+  .chat-window {
+    width: 90%;
+    height: 75%;
+  }
+  
+  .message-content {
+    max-width: 85%;
+    font-size: 26rpx;
+  }
+  
+  .quick-question-item {
+    font-size: 24rpx;
+    padding: 14rpx 20rpx;
+  }
+}

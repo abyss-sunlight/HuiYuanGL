@@ -1,6 +1,10 @@
 F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\ai\controller\AIController.java
+F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\ai\controller\CustomerServiceController.java
+F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\ai\dto\CustomerServiceRequest.java
+F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\ai\dto\CustomerServiceResponse.java
 F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\ai\dto\YuanbaiAIResponse.java
 F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\ai\dto\YuanbaoAIRequest.java
+F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\ai\service\CustomerServiceAIService.java
 F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\ai\service\YuanbaoAIService.java
 F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\auth\annotation\RequirePermission.java
 F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\auth\config\AuthConfig.java

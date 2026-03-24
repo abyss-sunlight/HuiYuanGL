@@ -37,6 +37,17 @@ public class UserService {
     }
 
     /**
+     * 根据ID查找用户
+     * 
+     * @param userId 用户ID
+     * @return 用户信息（如果存在）
+     */
+    @Transactional(readOnly = true)
+    public Optional<User> findById(Long userId) {
+        return userRepository.findById(userId);
+    }
+
+    /**
      * 删除用户
      * 
      * @param userId 用户ID

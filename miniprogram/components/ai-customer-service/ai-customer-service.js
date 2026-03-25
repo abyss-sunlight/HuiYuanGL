@@ -116,11 +116,33 @@ Component({
      */
     addMessage(role, content) {
       const messageId = this.data.messageId + 1;
+      
+      // 解析AI回复中的跳转信息
+      let hasNavigation = false;
+      let navigationUrl = '';
+      let navigationText = '';
+      let displayContent = content;
+      
+      if (role === 'assistant') {
+        const navigationMatch = this.parseNavigationInfo(content);
+        hasNavigation = navigationMatch.hasNavigation;
+        navigationUrl = navigationMatch.url;
+        navigationText = navigationMatch.text;
+        
+        // 如果是对象格式，提取content字段作为显示内容
+        if (typeof content === 'object' && content.content) {
+          displayContent = content.content;
+        }
+      }
+      
       const message = {
         id: messageId,
         role: role,
-        content: content,
-        time: this.formatTime(new Date())
+        content: displayContent,
+        time: this.formatTime(new Date()),
+        hasNavigation: hasNavigation,
+        navigationUrl: navigationUrl,
+        navigationText: navigationText
       };
 
       const messages = [...this.data.messages, message];
@@ -130,6 +152,75 @@ Component({
         messageId: messageId,
         scrollIntoView: `msg-${messageId}`
       });
+    },
+
+    /**
+     * 解析AI回复中的跳转信息
+     */
+    parseNavigationInfo(content) {
+      // 首先检查是否是包含actionType的对象格式回复
+      if (typeof content === 'object' && content.actionType === 'navigate') {
+        const actionParams = content.actionParams;
+        if (actionParams && actionParams.page) {
+          return {
+            hasNavigation: true,
+            url: '/' + actionParams.page, // 确保路径以/开头
+            text: `前往${actionParams.name || '目标页面'}`
+          };
+        }
+      }
+      
+      // 如果是字符串，使用原有的文本解析逻辑
+      if (typeof content === 'string') {
+        // 匹配跳转信息的正则表达式
+        const patterns = [
+          /跳转到[\"']?([^\"'\s]+)[\"']?页面/gi,
+          /前往[\"']?([^\"'\s]+)[\"']?页面/gi,
+          /打开[\"']?([^\"'\s]+)[\"']?页面/gi,
+          /页面[\"']?([^\"'\s]+)[\"']?/gi,
+          /跳转到[\"']?([^\"'\s]+)[\"']?/gi,
+          /前往[\"']?([^\"'\s]+)[\"']?/gi
+        ];
+        
+        // 页面路径映射
+        const pageMapping = {
+          '主页': '/pages/index/index',
+          '记录': '/pages/records/records',
+          '我的': '/pages/profile/profile',
+          '会员管理': '/pages/members/members',
+          '折扣管理': '/pages/discount-management/discount-management',
+          'AI分析': '/pages/ai-analysis/ai-analysis',
+          '美睫记录': '/pages/records/records'
+        };
+        
+        for (const pattern of patterns) {
+          const matches = content.match(pattern);
+          if (matches) {
+            for (const match of matches) {
+              // 提取页面名称
+              const pageNameMatch = match.match(/[\"']?([^\"'\s]+)[\"']?/);
+              if (pageNameMatch) {
+                const pageName = pageNameMatch[1];
+                const url = pageMapping[pageName];
+                
+                if (url) {
+                  return {
+                    hasNavigation: true,
+                    url: url,
+                    text: `前往${pageName}`
+                  };
+                }
+              }
+            }
+          }
+        }
+      }
+      
+      return {
+        hasNavigation: false,
+        url: '',
+        text: ''
+      };
     },
 
     /**
@@ -159,8 +250,8 @@ Component({
         if (response) {
           const aiResponse = response;
           
-          // 添加AI回复
-          this.addMessage('assistant', aiResponse.content);
+          // 添加AI回复 - 传递完整对象以便解析跳转信息
+          this.addMessage('assistant', aiResponse);
           
           // 处理操作建议
           if (aiResponse.actionType && aiResponse.actionParams) {
@@ -309,6 +400,99 @@ Component({
         scrollIntoView: '',
         messageId: 0
       });
+    },
+
+    /**
+     * 确认跳转
+     */
+    confirmNavigation(e) {
+      const url = e.currentTarget.dataset.url;
+      const messageId = e.currentTarget.dataset.messageId;
+      
+      if (url) {
+        // 检查是否是tabBar页面（根据app.json中的实际配置）
+        const tabBarPages = [
+          '/pages/index/index',
+          '/pages/records/records',
+          '/pages/profile/profile'
+        ];
+        
+        const isTabBarPage = tabBarPages.some(tabBarUrl => url.startsWith(tabBarUrl));
+        
+        const navigateMethod = isTabBarPage ? wx.switchTab : wx.navigateTo;
+        
+        // 执行页面跳转
+        navigateMethod({
+          url: url,
+          success: () => {
+            // 跳转成功后隐藏聊天框
+            this.hideChat();
+            
+            // 添加确认消息
+            this.addMessage('system', `已为您跳转到${this.getNavigationText(url)}`);
+          },
+          fail: (err) => {
+            console.error('页面跳转失败:', err);
+            wx.showToast({
+              title: '页面跳转失败',
+              icon: 'none'
+            });
+          }
+        });
+      }
+      
+      // 移除跳转按钮
+      this.removeNavigationButtons(messageId);
+    },
+
+    /**
+     * 取消跳转
+     */
+    cancelNavigation(e) {
+      const messageId = e.currentTarget.dataset.messageId;
+      
+      // 移除跳转按钮
+      this.removeNavigationButtons(messageId);
+      
+      // 添加取消消息
+      this.addMessage('system', '已取消跳转');
+    },
+
+    /**
+     * 移除跳转按钮
+     */
+    removeNavigationButtons(messageId) {
+      const messages = this.data.messages.map(msg => {
+        if (msg.id === messageId) {
+          return {
+            ...msg,
+            hasNavigation: false,
+            navigationUrl: '',
+            navigationText: ''
+          };
+        }
+        return msg;
+      });
+      
+      this.setData({
+        messages: messages
+      });
+    },
+
+    /**
+     * 获取页面导航文本
+     */
+    getNavigationText(url) {
+      const pageTextMapping = {
+        '/pages/index/index': '主页',
+        '/pages/records/records': '记录',
+        '/pages/profile/profile': '我的',
+        '/pages/members/members': '会员管理',
+        '/pages/discount-management/discount-management': '折扣管理',
+        '/pages/ai-analysis/ai-analysis': 'AI分析'
+      };
+      
+      return pageTextMapping[url] || '目标页面';
     }
   },
 

@@ -94,7 +94,7 @@
 /* 聊天窗口 */
 .chat-window {
   width: 85%;
-  height: 70%;
+  height: 80%;
   background: white;
   border-radius: 24rpx;
   display: flex;
@@ -143,6 +143,8 @@
   padding: 20rpx;
   background: #f8f9fa;
   overflow-y: auto;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* 消息项 */
@@ -173,6 +175,7 @@
   background: #007aff;
   color: white;
   border-bottom-right-radius: 8rpx;
+  margin-right: 20rpx;
 }
 
 .ai-message .message-content {
@@ -196,20 +199,61 @@
 
 .user-message .message-time {
   text-align: right;
+  margin-right: 20rpx;
 }
 
 .ai-message .message-time {
   text-align: left;
+  margin-left: 20rpx;
+}
+
+/* 跳转确认按钮 */
+.action-buttons {
+  margin-top: 16rpx;
+  display: flex;
+  gap: 16rpx;
+  margin-left: 20rpx;
+}
+
+.action-button {
+  padding: 12rpx 24rpx;
+  border-radius: 20rpx;
+  font-size: 24rpx;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.action-button.confirm {
+  background: #007aff;
+  color: white;
+}
+
+.action-button.confirm:active {
+  background: #0056b3;
+  transform: scale(0.95);
+}
+
+.action-button.cancel {
+  background: #f1f3f4;
+  color: #5f6368;
+}
+
+.action-button.cancel:active {
+  background: #e8eaed;
+  transform: scale(0.95);
 }
 
 /* 快捷问题 */
 .quick-questions {
   padding: 20rpx;
-  background: white;
+  background: #f8f9fa;
   border-top: 1rpx solid #e9ecef;
   display: flex;
   flex-wrap: wrap;
   gap: 16rpx;
+  margin-top: 20rpx;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .quick-question-item {

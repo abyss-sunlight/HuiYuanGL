@@ -49,6 +49,24 @@
           <view class="message-content">
             <text>{{item.content}}</text>
           </view>
+          <!-- 跳转确认按钮 -->
+          <view class="action-buttons" wx:if="{{item.role === 'assistant' && item.hasNavigation}}">
+            <button 
+              class="action-button confirm" 
+              bindtap="confirmNavigation"
+              data-url="{{item.navigationUrl}}"
+              data-message-id="{{item.id}}"
+            >
+              {{item.navigationText || '前往'}}
+            </button>
+            <button 
+              class="action-button cancel" 
+              bindtap="cancelNavigation"
+              data-message-id="{{item.id}}"
+            >
+              取消
+            </button>
+          </view>
           <view class="message-time">{{item.time}}</view>
         </view>
         
@@ -58,20 +76,20 @@
             <text>正在思考中...</text>
           </view>
         </view>
-      </scroll-view>
-      
-      <!-- 快捷问题 -->
-      <view class="quick-questions" wx:if="{{quickQuestions.length > 0 && !isLoading}}">
-        <view 
-          class="quick-question-item" 
-          wx:for="{{quickQuestions}}" 
-          wx:key="*this"
-          bindtap="sendQuickQuestion"
-          data-question="{{item}}"
-        >
-          {{item}}
+        
+        <!-- 快捷问题 -->
+        <view class="quick-questions" wx:if="{{quickQuestions.length > 0 && !isLoading}}">
+          <view 
+            class="quick-question-item" 
+            wx:for="{{quickQuestions}}" 
+            wx:key="*this"
+            bindtap="sendQuickQuestion"
+            data-question="{{item}}"
+          >
+            {{item}}
+          </view>
         </view>
-      </view>
+      </scroll-view>
       
       <!-- 输入区域 -->
       <view class="input-area">

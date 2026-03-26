@@ -46,11 +46,29 @@ const formMixin = {
     this.setData({ 'consumeForm.consumeAmount': e.detail.value })
   },
 
+  onConsumeItemSelect(e) {
+    const item = e.currentTarget.dataset.item
+    
+    this.setData({ 
+      'consumeForm.consumeItem': item,
+      consumeItemIndex: this.data.consumeItems.indexOf(item) // 同步更新索引以保持兼容性
+    })
+  },
+
   onConsumeItemChange(e) {
     const index = e.detail.value
     this.setData({ 
       consumeItemIndex: index,
       'consumeForm.consumeItem': this.data.consumeItems[index]
+    })
+  },
+
+  onConsumeTypeSelect(e) {
+    const type = e.currentTarget.dataset.type
+    
+    this.setData({ 
+      'consumeForm.consumeType': type,
+      consumeTypeIndex: this.data.consumeTypes.indexOf(type) // 同步更新索引以保持兼容性
     })
   },
 

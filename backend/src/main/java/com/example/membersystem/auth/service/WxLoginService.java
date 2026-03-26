@@ -3,6 +3,7 @@ package com.example.membersystem.auth.service;
 import com.example.membersystem.auth.dto.LoginResponse;
 import com.example.membersystem.auth.dto.WxLoginRequest;
 import com.example.membersystem.auth.util.JwtUtil;
+import com.example.membersystem.common.BusinessException;
 import com.example.membersystem.user.entity.User;
 import com.example.membersystem.user.repo.UserRepository;
 import org.springframework.stereotype.Service;
@@ -69,7 +70,8 @@ public class WxLoginService {
         // 3. 根据openid查找用户
         User user = userRepository.findByOpenid(openid)
                 .map(existingUser -> {
-                    // 用户已存在，更新用户信息
+                    // 用户已存在，检查状态并更新用户信息
+                    validateUserStatus(existingUser);
                     updateUserInfoFromWx(existingUser, request.getUserInfo());
                     System.out.println("更新已存在的微信用户: " + existingUser.getPhone());
                     return existingUser;
@@ -79,7 +81,7 @@ public class WxLoginService {
                     if (!StringUtils.hasText(request.getUserInfo().getLastName())) {
                         // 新用户但缺少必要信息，返回特殊状态码
                         System.out.println("新用户缺少必要信息，需要补充");
-                        throw new RuntimeException("新用户需要补充姓氏和性别信息");
+                        throw new BusinessException(201, "新用户需要补充姓氏和性别信息");
                     }
                     
                     // 创建新用户账户
@@ -244,5 +246,18 @@ public class WxLoginService {
         System.out.println("返回响应: " + response);
         
         return response;
+    }
+
+    /**
+     * 验证用户状态
+     * 
+     * @param user 用户对象
+     * @throws BusinessException 当用户状态异常时抛出
+     */
+    private void validateUserStatus(User user) {
+        if (user.getStatus() == 1) {
+            System.out.println("用户状态异常: " + user.getStatus());
+            throw new BusinessException(40101, "账户已被禁用，请联系管理员");
+        }
     }
 }

@@ -173,7 +173,7 @@ public class EyelashRecordController {
     /**
      * 根据姓氏查找记录
      */
-    @GetMapping("/lastname/{lastName}")
+    @GetMapping("/last-name/{lastName}")
     public ResponseEntity<Map<String, Object>> getRecordsByLastName(@PathVariable String lastName) {
         try {
             List<EyelashRecord> records = eyelashRecordService.findByLastName(lastName);
@@ -323,6 +323,61 @@ public class EyelashRecordController {
             Map<String, Object> response = new HashMap<>();
             response.put("code", -1);
             response.put("message", "删除睫毛记录失败: " + e.getMessage());
+            
+            return ResponseEntity.status(500).body(response);
+        }
+    }
+
+    /**
+     * 根据姓氏和日期范围查找记录
+     */
+    @GetMapping("/last-name/{lastName}/date-range")
+    public ResponseEntity<Map<String, Object>> getRecordsByLastNameAndDateRange(
+            @PathVariable String lastName,
+            @RequestParam String startDate,
+            @RequestParam String endDate) {
+        try {
+            LocalDate start = LocalDate.parse(startDate);
+            LocalDate end = LocalDate.parse(endDate);
+            List<EyelashRecord> records = eyelashRecordService.findByLastNameAndDateRange(lastName, start, end);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("code", 0);
+            response.put("message", "获取成功");
+            response.put("data", records);
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("code", -1);
+            response.put("message", "查找记录失败: " + e.getMessage());
+            
+            return ResponseEntity.status(500).body(response);
+        }
+    }
+
+    /**
+     * 根据日期范围查找记录
+     */
+    @GetMapping("/date-range")
+    public ResponseEntity<Map<String, Object>> getRecordsByDateRange(
+            @RequestParam String startDate,
+            @RequestParam String endDate) {
+        try {
+            LocalDate start = LocalDate.parse(startDate);
+            LocalDate end = LocalDate.parse(endDate);
+            List<EyelashRecord> records = eyelashRecordService.findByDateRange(start, end);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("code", 0);
+            response.put("message", "获取成功");
+            response.put("data", records);
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("code", -1);
+            response.put("message", "查找记录失败: " + e.getMessage());
             
             return ResponseEntity.status(500).body(response);
         }

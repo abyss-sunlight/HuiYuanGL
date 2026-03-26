@@ -59,6 +59,18 @@
     </view>
   </view>
 
+  <!-- 充值折扣规则显示区域 -->
+  <view class="discount-rules-section" wx:if="{{rechargeDiscounts.length > 0}}">
+    <view class="discount-title">充值优惠</view>
+    <view class="discount-rules">
+      <view class="discount-rule" wx:for="{{rechargeDiscounts}}" wx:key="id">
+        <text class="discount-amount">¥{{item.rechargeAmount}}</text>
+        <text class="discount-separator">-</text>
+        <text class="discount-percentage">{{item.discountPercentage}}折</text>
+      </view>
+    </view>
+  </view>
+
   <view class="feature-grid">
     <view class="feature-item" bindtap="goToRecords">
       <view class="feature-icon">📋</view>
@@ -111,7 +123,7 @@
     <view class="action-title">快捷操作</view>
     <button class="action-btn secondary" bindtap="viewReports">
       <text class="btn-icon">📊</text>
-      <text class="btn-text">查看报表</text>
+      <text class="btn-text">AI分析</text>
     </button>
   </view>
 

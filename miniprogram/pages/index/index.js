@@ -16,13 +16,15 @@ Page({
       totalMembers: 0,
       todayNew: 0,
       activeUsers: 0
-    }
+    },
+    rechargeDiscounts: []  // 充值折扣规则列表
   },
 
   onLoad() {
     this.setData({ userInfo: getUserInfo() })
     this.loadCarouselContent()
     this.loadStats()
+    this.loadRechargeDiscounts()
   },
 
   onShow() {
@@ -30,6 +32,7 @@ Page({
     this.setData({ userInfo: getUserInfo() })
     this.loadCarouselContent()
     this.loadStats()
+    this.loadRechargeDiscounts()
   },
 
   loadCarouselContent() {
@@ -308,6 +311,25 @@ Page({
     // 跳转到AI分析页面
     wx.navigateTo({
       url: '/pages/ai-analysis/ai-analysis'
+    })
+  },
+
+  loadRechargeDiscounts() {
+    // 调用后端API获取启用的充值折扣规则
+    request({
+      url: '/api/recharge-discount/active',
+      method: 'GET'
+    }).then(discounts => {
+      // request.js已经返回了data字段，所以discounts就是数组
+      this.setData({
+        rechargeDiscounts: discounts || []
+      })
+    }).catch(err => {
+      console.error('加载充值折扣规则失败:', err)
+      // 加载失败时设置为空数组
+      this.setData({
+        rechargeDiscounts: []
+      })
     })
   },
 

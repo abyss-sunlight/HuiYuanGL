@@ -53,7 +53,11 @@ F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\stats\dto\Stat
 F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\stats\service\StatsService.java
 F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\user\controller\UserController.java
 F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\user\dto\ProfileUpdateRequest.java
+F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\user\dto\UserCreateRequest.java
 F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\user\dto\UserListItemResponse.java
+F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\user\dto\UserStatusUpdateRequest.java
 F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\user\entity\User.java
+F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\user\entity\UserStatusLog.java
 F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\user\repo\UserRepository.java
+F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\user\repo\UserStatusLogRepository.java
 F:\CURSOR\biyesji6\backend\src\main\java\com\example\membersystem\user\service\UserService.java

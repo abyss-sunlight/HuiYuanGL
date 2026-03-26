@@ -17,12 +17,12 @@ import java.util.List;
 public interface ConsumeRecordRepository extends JpaRepository<ConsumeRecord, Long> {
 
     /**
-     * 根据手机号查找记录
+     * 根据手机号查找记录（模糊搜索）
      * 
-     * @param phone 手机号
+     * @param phone 手机号（支持部分匹配）
      * @return 消费记录列表
      */
-    @Query("SELECT cr FROM ConsumeRecord cr WHERE cr.phone = :phone ORDER BY cr.createdAt DESC")
+    @Query("SELECT cr FROM ConsumeRecord cr WHERE cr.phone LIKE %:phone% ORDER BY cr.createdAt DESC")
     List<ConsumeRecord> findByPhoneOrderByCreatedAtDesc(@Param("phone") String phone);
 
     /**
@@ -35,13 +35,13 @@ public interface ConsumeRecordRepository extends JpaRepository<ConsumeRecord, Lo
     List<ConsumeRecord> findByLastNameOrderByCreatedAtDesc(@Param("lastName") String lastName);
 
     /**
-     * 根据手机号和姓氏查找记录
+     * 根据手机号和姓氏查找记录（模糊搜索手机号）
      * 
-     * @param phone 手机号
+     * @param phone 手机号（支持部分匹配）
      * @param lastName 姓氏
      * @return 消费记录列表
      */
-    @Query("SELECT cr FROM ConsumeRecord cr WHERE cr.phone = :phone AND cr.lastName = :lastName ORDER BY cr.createdAt DESC")
+    @Query("SELECT cr FROM ConsumeRecord cr WHERE cr.phone LIKE %:phone% AND cr.lastName = :lastName ORDER BY cr.createdAt DESC")
     List<ConsumeRecord> findByPhoneAndLastNameOrderByCreatedAtDesc(@Param("phone") String phone, @Param("lastName") String lastName);
 
     /**
@@ -56,14 +56,14 @@ public interface ConsumeRecordRepository extends JpaRepository<ConsumeRecord, Lo
                                                             @Param("endDate") LocalDate endDate);
 
     /**
-     * 根据手机号和日期范围查找记录
+     * 根据手机号和日期范围查找记录（模糊搜索手机号）
      * 
-     * @param phone 手机号
+     * @param phone 手机号（支持部分匹配）
      * @param startDate 开始日期
      * @param endDate 结束日期
      * @return 消费记录列表
      */
-    @Query("SELECT cr FROM ConsumeRecord cr WHERE cr.phone = :phone AND cr.consumeDate BETWEEN :startDate AND :endDate ORDER BY cr.createdAt DESC")
+    @Query("SELECT cr FROM ConsumeRecord cr WHERE cr.phone LIKE %:phone% AND cr.consumeDate BETWEEN :startDate AND :endDate ORDER BY cr.createdAt DESC")
     List<ConsumeRecord> findByPhoneAndDateRangeOrderByCreatedAtDesc(@Param("phone") String phone,
                                                                        @Param("startDate") LocalDate startDate,
                                                                        @Param("endDate") LocalDate endDate);
@@ -82,15 +82,15 @@ public interface ConsumeRecordRepository extends JpaRepository<ConsumeRecord, Lo
                                                                          @Param("endDate") LocalDate endDate);
 
     /**
-     * 根据手机号、姓氏和日期范围查找记录
+     * 根据手机号、姓氏和日期范围查找记录（模糊搜索手机号）
      * 
-     * @param phone 手机号
+     * @param phone 手机号（支持部分匹配）
      * @param lastName 姓氏
      * @param startDate 开始日期
      * @param endDate 结束日期
      * @return 消费记录列表
      */
-    @Query("SELECT cr FROM ConsumeRecord cr WHERE cr.phone = :phone AND cr.lastName = :lastName AND cr.consumeDate BETWEEN :startDate AND :endDate ORDER BY cr.createdAt DESC")
+    @Query("SELECT cr FROM ConsumeRecord cr WHERE cr.phone LIKE %:phone% AND cr.lastName = :lastName AND cr.consumeDate BETWEEN :startDate AND :endDate ORDER BY cr.createdAt DESC")
     List<ConsumeRecord> findByPhoneAndLastNameAndDateRangeOrderByCreatedAtDesc(@Param("phone") String phone,
                                                                                @Param("lastName") String lastName,
                                                                                @Param("startDate") LocalDate startDate,

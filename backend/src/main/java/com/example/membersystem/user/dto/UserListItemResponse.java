@@ -15,6 +15,7 @@ public class UserListItemResponse {
     private String memberNo;
     private BigDecimal amount;
     private BigDecimal discount;
+    private Integer status;
 
     public Long getUserId() {
         return userId;
@@ -94,5 +95,13 @@ public class UserListItemResponse {
 
     public void setDiscount(BigDecimal discount) {
         this.discount = discount;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 }

@@ -134,6 +134,56 @@
   line-height: 1.4;
 }
 
+/* 充值折扣规则样式 */
+.discount-rules-section {
+  background: white;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin-bottom: 40rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.1);
+}
+
+.discount-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+  text-align: center;
+}
+
+.discount-rules {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20rpx;
+  justify-content: center;
+}
+
+.discount-rule {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, #ff6b6b 0%, #ffa726 100%);
+  color: white;
+  padding: 12rpx 24rpx;
+  border-radius: 50rpx;
+  font-size: 24rpx;
+  white-space: nowrap;
+}
+
+.discount-amount {
+  font-weight: bold;
+  color: white;
+}
+
+.discount-separator {
+  margin: 0 8rpx;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.discount-percentage {
+  font-weight: bold;
+  color: white;
+}
+
 .feature-grid {
   display: flex;
   gap: 30rpx;

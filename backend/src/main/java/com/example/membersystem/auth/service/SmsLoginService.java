@@ -3,6 +3,7 @@ package com.example.membersystem.auth.service;
 import com.example.membersystem.auth.dto.LoginResponse;
 import com.example.membersystem.auth.dto.SmsLoginRequest;
 import com.example.membersystem.auth.util.JwtUtil;
+import com.example.membersystem.common.BusinessException;
 import com.example.membersystem.user.entity.User;
 import com.example.membersystem.user.repo.UserRepository;
 import org.springframework.stereotype.Service;
@@ -132,12 +133,12 @@ public class SmsLoginService {
      * 验证用户状态
      * 
      * @param user 用户对象
-     * @throws RuntimeException 当用户状态异常时抛出
+     * @throws BusinessException 当用户状态异常时抛出
      */
     private void validateUserStatus(User user) {
         if (user.getStatus() == 1) {
             System.out.println("用户状态异常: " + user.getStatus());
-            throw new RuntimeException("账户已被禁用");
+            throw new BusinessException(40101, "账户已被禁用，请联系管理员");
         }
     }
 

@@ -16,12 +16,12 @@ import java.util.List;
 public interface EyelashRecordRepository extends JpaRepository<EyelashRecord, Long> {
 
     /**
-     * 根据手机号查找记录
+     * 根据手机号查找记录（模糊搜索）
      * 
-     * @param phone 手机号
+     * @param phone 手机号（支持部分匹配）
      * @return 睫毛记录列表
      */
-    @Query("SELECT er FROM EyelashRecord er WHERE er.phone = :phone ORDER BY er.createdAt DESC")
+    @Query("SELECT er FROM EyelashRecord er WHERE er.phone LIKE %:phone% ORDER BY er.createdAt DESC")
     List<EyelashRecord> findByPhoneOrderByCreatedAtDesc(@Param("phone") String phone);
 
     /**
@@ -34,13 +34,13 @@ public interface EyelashRecordRepository extends JpaRepository<EyelashRecord, Lo
     List<EyelashRecord> findByLastNameOrderByCreatedAtDesc(@Param("lastName") String lastName);
 
     /**
-     * 根据手机号和姓氏查找记录
+     * 根据手机号和姓氏查找记录（模糊搜索手机号）
      * 
-     * @param phone 手机号
+     * @param phone 手机号（支持部分匹配）
      * @param lastName 姓氏
      * @return 睫毛记录列表
      */
-    @Query("SELECT er FROM EyelashRecord er WHERE er.phone = :phone AND er.lastName = :lastName ORDER BY er.createdAt DESC")
+    @Query("SELECT er FROM EyelashRecord er WHERE er.phone LIKE %:phone% AND er.lastName = :lastName ORDER BY er.createdAt DESC")
     List<EyelashRecord> findByPhoneAndLastNameOrderByCreatedAtDesc(@Param("phone") String phone, @Param("lastName") String lastName);
 
     /**
@@ -55,17 +55,17 @@ public interface EyelashRecordRepository extends JpaRepository<EyelashRecord, Lo
                                                            @Param("endDate") LocalDate endDate);
 
     /**
-     * 根据手机号和日期范围查找记录
+     * 根据手机号和日期范围查找记录（模糊搜索手机号）
      * 
-     * @param phone 手机号
+     * @param phone 手机号（支持部分匹配）
      * @param startDate 开始日期
      * @param endDate 结束日期
      * @return 睫毛记录列表
      */
-    @Query("SELECT er FROM EyelashRecord er WHERE er.phone = :phone AND er.recordDate BETWEEN :startDate AND :endDate ORDER BY er.createdAt DESC")
+    @Query("SELECT er FROM EyelashRecord er WHERE er.phone LIKE %:phone% AND er.recordDate BETWEEN :startDate AND :endDate ORDER BY er.createdAt DESC")
     List<EyelashRecord> findByPhoneAndDateRangeOrderByCreatedAtDesc(@Param("phone") String phone,
-                                                                       @Param("startDate") LocalDate startDate,
-                                                                       @Param("endDate") LocalDate endDate);
+                                                                      @Param("startDate") LocalDate startDate,
+                                                                      @Param("endDate") LocalDate endDate);
 
     /**
      * 根据姓氏和日期范围查找记录
@@ -81,19 +81,19 @@ public interface EyelashRecordRepository extends JpaRepository<EyelashRecord, Lo
                                                                          @Param("endDate") LocalDate endDate);
 
     /**
-     * 根据手机号、姓氏和日期范围查找记录
+     * 根据手机号、姓氏和日期范围查找记录（模糊搜索手机号）
      * 
-     * @param phone 手机号
+     * @param phone 手机号（支持部分匹配）
      * @param lastName 姓氏
      * @param startDate 开始日期
      * @param endDate 结束日期
      * @return 睫毛记录列表
      */
-    @Query("SELECT er FROM EyelashRecord er WHERE er.phone = :phone AND er.lastName = :lastName AND er.recordDate BETWEEN :startDate AND :endDate ORDER BY er.createdAt DESC")
+    @Query("SELECT er FROM EyelashRecord er WHERE er.phone LIKE %:phone% AND er.lastName = :lastName AND er.recordDate BETWEEN :startDate AND :endDate ORDER BY er.createdAt DESC")
     List<EyelashRecord> findByPhoneAndLastNameAndDateRangeOrderByCreatedAtDesc(@Param("phone") String phone,
-                                                                               @Param("lastName") String lastName,
-                                                                               @Param("startDate") LocalDate startDate,
-                                                                               @Param("endDate") LocalDate endDate);
+                                                                                   @Param("lastName") String lastName,
+                                                                                   @Param("startDate") LocalDate startDate,
+                                                                                   @Param("endDate") LocalDate endDate);
 
     /**
      * 根据款式查找记录

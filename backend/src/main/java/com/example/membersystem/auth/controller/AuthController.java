@@ -57,17 +57,10 @@ public class AuthController {
         System.out.println("=== AuthController 短信登录请求 ===");
         System.out.println("请求体: " + request);
         
-        try {
-            // 调用服务层处理短信登录逻辑
-            LoginResponse response = authService.smsLogin(request);
-            System.out.println("短信登录成功，返回响应");
-            return ApiResponse.ok(response);
-        } catch (Exception e) {
-            // 记录错误日志并重新抛出异常
-            System.out.println("短信登录失败: " + e.getMessage());
-            e.printStackTrace();
-            throw e;
-        }
+        // 调用服务层处理短信登录逻辑
+        LoginResponse response = authService.smsLogin(request);
+        System.out.println("短信登录成功，返回响应");
+        return ApiResponse.ok(response);
     }
 
     /**
@@ -86,17 +79,10 @@ public class AuthController {
         System.out.println("=== AuthController 密码登录请求 ===");
         System.out.println("请求体: " + request);
         
-        try {
-            // 调用服务层处理密码登录逻辑
-            LoginResponse response = authService.passwordLogin(request);
-            System.out.println("密码登录成功，返回响应");
-            return ApiResponse.ok(response);
-        } catch (Exception e) {
-            // 记录错误日志并重新抛出异常
-            System.out.println("密码登录失败: " + e.getMessage());
-            e.printStackTrace();
-            throw e;
-        }
+        // 调用服务层处理密码登录逻辑
+        LoginResponse response = authService.passwordLogin(request);
+        System.out.println("密码登录成功，返回响应");
+        return ApiResponse.ok(response);
     }
 
     /**

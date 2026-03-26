@@ -19,6 +19,11 @@
       <button class="btn primary" bindtap="search">查询</button>
     </view>
     
+    <!-- 添加成员按钮 - 仅店长可见 -->
+    <view class="btn-row" wx:if="{{userInfo.permissionLevel === 1}}">
+      <button class="btn success" bindtap="showAddMemberModal">添加成员</button>
+    </view>
+    
     <view class="btn-row">
       <button class="btn refresh" bindtap="refreshData">刷新数据</button>
     </view>
@@ -192,10 +197,18 @@
       <!-- 消费项目选择（仅消费模式） -->
       <view class="form-group" wx:if="{{consumeType === 'consume'}}">
         <text class="form-label">消费项目 *</text>
-        <picker class="form-input" mode="selector" range="{{consumeItems}}" 
-                value="{{consumeItemIndex}}" bindchange="onConsumeItemChange">
-          <view class="picker-text">{{consumeItems[consumeItemIndex] || '请选择消费项目'}}</view>
-        </picker>
+        <view class="radio-group consume-item-group">
+          <view class="radio-item {{consumeForm.consumeItem === '美睫项目' ? 'selected' : ''}}" 
+                bindtap="onConsumeItemSelect" data-item="美睫项目">
+            <view class="radio-icon {{consumeForm.consumeItem === '美睫项目' ? 'checked' : ''}}"></view>
+            <text class="radio-text">美睫项目</text>
+          </view>
+          <view class="radio-item {{consumeForm.consumeItem === '美甲项目' ? 'selected' : ''}}" 
+                bindtap="onConsumeItemSelect" data-item="美甲项目">
+            <view class="radio-icon {{consumeForm.consumeItem === '美甲项目' ? 'checked' : ''}}"></view>
+            <text class="radio-text">美甲项目</text>
+          </view>
+        </view>
       </view>
       
       <!-- 消费项目（仅充值模式，固定为会员充值） -->
@@ -207,10 +220,18 @@
       <!-- 消费类型选择（仅消费模式） -->
       <view class="form-group" wx:if="{{consumeType === 'consume'}}">
         <text class="form-label">消费类型 *</text>
-        <picker class="form-input" mode="selector" range="{{consumeTypes}}" 
-                value="{{consumeTypeIndex}}" bindchange="onConsumeTypeChange">
-          <view class="picker-text">{{consumeTypes[consumeTypeIndex] || '请选择消费类型'}}</view>
-        </picker>
+        <view class="radio-group consume-type-group">
+          <view class="radio-item {{consumeForm.consumeType === '充值' ? 'selected' : ''}}" 
+                bindtap="onConsumeTypeSelect" data-type="充值">
+            <view class="radio-icon {{consumeForm.consumeType === '充值' ? 'checked' : ''}}"></view>
+            <text class="radio-text">充值</text>
+          </view>
+          <view class="radio-item {{consumeForm.consumeType === '支出' ? 'selected' : ''}}" 
+                bindtap="onConsumeTypeSelect" data-type="支出">
+            <view class="radio-icon {{consumeForm.consumeType === '支出' ? 'checked' : ''}}"></view>
+            <text class="radio-text">支出</text>
+          </view>
+        </view>
       </view>
       
       <!-- 消费类型（仅充值模式，固定为充值） -->
@@ -229,6 +250,197 @@
     <view class="modal-footer">
       <button class="modal-btn cancel-btn" bindtap="hideConsumeModal">取消</button>
       <button class="modal-btn confirm-btn" bindtap="submitConsumeForm">确认{{consumeType === 'recharge' ? '充值' : '消费'}}</button>
+    </view>
+  </view>
+</view>
+
+<!-- 添加成员模态弹窗 -->
+<view class="modal-overlay" wx:if="{{showAddMemberModal}}" bindtap="hideAddMemberModal">
+  <view class="modal-content" catchtap="stopPropagation">
+    <view class="modal-header">
+      <text class="modal-title">添加成员</text>
+      <text class="modal-close" bindtap="hideAddMemberModal">×</text>
+    </view>
+    
+    <view class="modal-body">
+      <!-- 权限等级 -->
+      <view class="form-group">
+        <text class="form-label">权限等级 *</text>
+        <view class="radio-group permission-radio-group">
+          <view class="radio-item {{addMemberForm.permissionLevel === 2 ? 'selected' : ''}}" 
+                bindtap="onPermissionSelect" data-permission="2">
+            <view class="radio-icon {{addMemberForm.permissionLevel === 2 ? 'checked' : ''}}"></view>
+            <text class="radio-text">员工</text>
+          </view>
+          <view class="radio-item {{addMemberForm.permissionLevel === 3 ? 'selected' : ''}}" 
+                bindtap="onPermissionSelect" data-permission="3">
+            <view class="radio-icon {{addMemberForm.permissionLevel === 3 ? 'checked' : ''}}"></view>
+            <text class="radio-text">会员</text>
+          </view>
+          <view class="radio-item {{addMemberForm.permissionLevel === 4 ? 'selected' : ''}}" 
+                bindtap="onPermissionSelect" data-permission="4">
+            <view class="radio-icon {{addMemberForm.permissionLevel === 4 ? 'checked' : ''}}"></view>
+            <text class="radio-text">游客</text>
+          </view>
+        </view>
+        <view class="permission-hint">提示：店长权限不允许创建</view>
+      </view>
+      
+      <!-- 手机号 -->
+      <view class="form-group">
+        <text class="form-label">手机号 *</text>
+        <input class="form-input" type="number" placeholder="请输入手机号" 
+               value="{{addMemberForm.phone}}" bindinput="onAddMemberPhoneInput" maxlength="11" />
+      </view>
+      
+      <!-- 姓氏 -->
+      <view class="form-group">
+        <text class="form-label">姓氏 *</text>
+        <input class="form-input" type="text" placeholder="请输入姓氏" 
+               value="{{addMemberForm.lastName}}" bindinput="onAddMemberLastNameInput" />
+      </view>
+      
+      <!-- 用户名（可选） -->
+      <view class="form-group">
+        <text class="form-label">用户名</text>
+        <input class="form-input" type="text" placeholder="留空将自动生成" 
+               value="{{addMemberForm.username}}" bindinput="onUsernameInput" />
+      </view>
+      
+      <!-- 头像URL（可选） -->
+      <view class="form-group">
+        <text class="form-label">头像</text>
+        <view class="current-avatar-container">
+          <view class="current-avatar" bindtap="toggleAvatarSelector">
+            <image wx:if="{{addMemberForm.avatarUrl}}" 
+                   class="current-avatar-img" 
+                   src="{{addMemberForm.avatarUrl}}" 
+                   mode="aspectFill" />
+            <view wx:else class="current-avatar-placeholder">
+              <text class="placeholder-icon">👤</text>
+            </view>
+            <view class="avatar-edit-hint">点击选择头像</view>
+          </view>
+        </view>
+        
+        <!-- 头像选择器 -->
+        <view class="avatar-options {{showAvatarOptions ? 'show' : ''}}" wx:if="{{showAvatarOptions}}">
+          <view class="avatar-item" wx:for="{{avatarOptions}}" wx:key="index" 
+                bindtap="selectAvatar" data-index="{{index}}">
+            <image class="avatar-img {{addMemberForm.avatarUrl === item ? 'selected' : ''}}" 
+                   src="{{item}}" mode="aspectFill" />
+            <view class="avatar-check" wx:if="{{addMemberForm.avatarUrl === item}}">✓</view>
+          </view>
+        </view>
+      </view>
+      
+      <!-- 性别 -->
+      <view class="form-group">
+        <text class="form-label">性别 *</text>
+        <view class="radio-group">
+          <view class="radio-item {{addMemberForm.gender === 1 ? 'selected' : ''}}" 
+                bindtap="onGenderSelect" data-gender="1">
+            <view class="radio-icon {{addMemberForm.gender === 1 ? 'checked' : ''}}"></view>
+            <text class="radio-text">男</text>
+          </view>
+          <view class="radio-item {{addMemberForm.gender === 2 ? 'selected' : ''}}" 
+                bindtap="onGenderSelect" data-gender="2">
+            <view class="radio-icon {{addMemberForm.gender === 2 ? 'checked' : ''}}"></view>
+            <text class="radio-text">女</text>
+          </view>
+        </view>
+      </view>
+      
+      <!-- 会员专属字段 -->
+      <view wx:if="{{addMemberForm.permissionLevel === 3}}">
+        <!-- 初始余额 -->
+        <view class="form-group">
+          <text class="form-label">初始余额</text>
+          <input class="form-input" type="digit" placeholder="请输入初始余额（可选）" 
+                 value="{{addMemberForm.amount}}" bindinput="onAmountInput" />
+        </view>
+        
+        <!-- 折扣率 -->
+        <view class="form-group">
+          <text class="form-label">折扣率</text>
+          <input class="form-input" type="digit" placeholder="请输入折扣率，如0.95表示95折（可选）" 
+                 value="{{addMemberForm.discount}}" bindinput="onDiscountInput" />
+        </view>
+      </view>
+    </view>
+    
+    <view class="modal-footer">
+      <button class="modal-btn cancel-btn" bindtap="hideAddMemberModal">取消</button>
+      <button class="modal-btn confirm-btn" bindtap="submitAddMemberForm">确认添加</button>
+    </view>
+  </view>
+</view>
+
+<!-- 成员编辑模态弹窗 -->
+<view class="modal-overlay" wx:if="{{showEditMemberModal}}" bindtap="hideEditMemberModal">
+  <view class="modal-content" catchtap="stopPropagation">
+    <view class="modal-header">
+      <text class="modal-title">编辑成员</text>
+      <text class="modal-close" bindtap="hideEditMemberModal">×</text>
+    </view>
+    
+    <view class="modal-body">
+      <!-- 用户头像 -->
+      <view class="user-avatar-section">
+        <image wx:if="{{editMemberForm.avatarUrl}}" 
+               class="user-avatar" 
+               src="{{editMemberForm.avatarUrl}}" 
+               mode="aspectFill" />
+        <view wx:else class="user-avatar-placeholder">
+          <text class="avatar-placeholder-icon">👤</text>
+        </view>
+      </view>
+      
+      <!-- 用户基本信息 -->
+      <view class="user-info-section">
+        <view class="info-row">
+          <text class="info-label">用户昵称：</text>
+          <text class="info-value">{{editMemberForm.username}}</text>
+        </view>
+        
+        <view class="info-row">
+          <text class="info-label">用户角色：</text>
+          <text class="info-value">{{editMemberForm.permissionName}}</text>
+        </view>
+        
+        <view class="info-row">
+          <text class="info-label">联系方式：</text>
+          <text class="info-value">{{editMemberForm.phone}}</text>
+        </view>
+        
+        <view class="info-row">
+          <text class="info-label">注册时间：</text>
+          <text class="info-value">{{editMemberForm.createdAt}}</text>
+        </view>
+        
+        <view class="info-row">
+          <text class="info-label">最后活跃：</text>
+          <text class="info-value">{{editMemberForm.updatedAt}}</text>
+        </view>
+      </view>
+      
+      <!-- 账户状态控制 -->
+      <view class="status-section">
+        <view class="status-row">
+          <text class="status-label">账户状态</text>
+          <switch class="status-switch" 
+                  checked="{{editMemberForm.status === 0}}" 
+                  bindchange="onStatusChange" 
+                  color="#07c160" />
+          <text class="status-text">{{editMemberForm.status === 0 ? '正常' : '禁用'}}</text>
+        </view>
+        <view class="status-hint">{{editMemberForm.status === 0 ? '用户可正常使用系统' : '用户已被禁用，无法登录'}}</view>
+      </view>
+    </view>
+    
+    <view class="modal-footer">
+      <button class="modal-btn cancel-btn" bindtap="hideEditMemberModal">取消</button>
+      <button class="modal-btn confirm-btn" bindtap="saveMemberChanges">保存更改</button>
     </view>
   </view>
 </view>

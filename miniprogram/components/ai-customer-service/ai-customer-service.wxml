@@ -21,7 +21,7 @@
     <view class="chat-window">
       <!-- 头部 -->
       <view class="chat-header">
-        <view class="header-title">AI客服助手</view>
+        <view class="header-title">小睫Pro - AI智能顾问</view>
         <view class="header-close" bindtap="hideChat">×</view>
       </view>
       
@@ -35,7 +35,7 @@
         <!-- 欢迎消息 -->
         <view class="message-item ai-message" wx:if="{{messages.length === 0}}">
           <view class="message-content">
-            <text>您好！我是美甲美睫门店的AI客服助手，有什么可以帮助您的吗？</text>
+            <text>您好！我是美甲美睫门店的AI智能顾问**小睫Pro** 😊\n\n我可以为您提供：\n• 会员咨询服务\n• 个性化款式推荐\n• 消费记录查询\n• 业务操作引导\n\n有什么可以帮助您的吗？</text>
           </view>
         </view>
         

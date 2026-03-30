@@ -388,36 +388,11 @@ Page({
   handleContactManager(data) {
     const contact = data?.contact || '18726685085'
     
-    wx.showModal({
-      title: '联系店长',
-      content: `店长联系方式：${contact}\n\n是否拨打电话？`,
-      confirmText: '拨打',
-      cancelText: '复制',
-      success: (res) => {
-        if (res.confirm) {
-          // 拨打电话
-          wx.makePhoneCall({
-            phoneNumber: contact,
-            fail: () => {
-              wx.showToast({
-                title: '拨打失败，请手动拨号',
-                icon: 'none'
-              })
-            }
-          })
-        } else if (res.cancel) {
-          // 复制到剪贴板
-          wx.setClipboardData({
-            data: contact,
-            success: () => {
-              wx.showToast({
-                title: '联系方式已复制',
-                icon: 'success'
-              })
-            }
-          })
-        }
-      }
+    // 直接显示联系方式，不拨打电话
+    wx.showToast({
+      title: `店长电话：${contact}`,
+      icon: 'none',
+      duration: 3000
     })
   }
 })

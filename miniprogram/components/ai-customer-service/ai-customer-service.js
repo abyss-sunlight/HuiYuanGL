@@ -344,17 +344,22 @@ Component({
       const questions = isMember ? [
         '我的余额是多少？',
         '查看我的消费记录',
-        '我上次做的睫毛是什么款式？'
+        '推荐适合我的新款式',
+        '美睫补睫周期建议'
       ] : [
         '如何成为会员？',
         '充值有优惠吗？',
-        '查看我的美睫记录'
+        '查看我的美睫记录',
+        '有什么推荐的款式？'
       ];
       
       questions.push('如何联系店长？');
       
+      // 限制快捷问题数量，最多显示5个
+      const limitedQuestions = questions.slice(0, 5);
+      
       this.setData({
-        quickQuestions: questions
+        quickQuestions: limitedQuestions
       });
     },
 

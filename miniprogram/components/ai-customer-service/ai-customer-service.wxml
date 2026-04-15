@@ -12,6 +12,13 @@
     <view class="unread-badge" wx:if="{{unreadCount > 0}}">{{unreadCount}}</view>
   </view>
 
+  <!-- 欢迎语弹幕 -->
+  <view class="welcome-barrage {{showWelcomeBarrage ? 'show' : ''}}" wx:if="{{welcomeMessage}}">
+    <view class="barrage-content">
+      <text class="barrage-text">{{welcomeMessage}}</text>
+    </view>
+  </view>
+
   <!-- 聊天界面 -->
   <view class="chat-container {{isVisible ? 'show' : 'hidden'}}">
     <!-- 遮罩层 -->

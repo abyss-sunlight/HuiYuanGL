@@ -28,7 +28,10 @@ Component({
     },
     quickQuestions: [],      // 快捷问题
     scrollIntoView: '',      // 滚动到指定消息
-    messageId: 0            // 消息ID计数器
+    messageId: 0,           // 消息ID计数器
+    welcomeMessage: '',      // 欢迎语内容
+    showWelcomeBarrage: false,  // 是否显示欢迎语弹幕
+    hasShownWelcome: false   // 是否已显示过欢迎语（避免重复）
   },
 
   /**
@@ -485,6 +488,53 @@ Component({
     },
 
     /**
+     * 显示欢迎语弹幕
+     */
+    showWelcomeMessage() {
+      // 检查是否已显示过欢迎语
+      if (this.data.hasShownWelcome) {
+        return;
+      }
+      
+      const userInfo = this.properties.userInfo;
+      let welcomeText = '';
+      
+      // 根据用户权限生成欢迎语
+      if (!userInfo || userInfo.permissionLevel >= 4) {
+        // 游客或未登录用户
+        const welcomeOptions = [
+          '欢迎！部分功能需升级会员后使用。',
+          '欢迎光临，成为会员解锁更多专属服务哦~'
+        ];
+        welcomeText = welcomeOptions[Math.floor(Math.random() * welcomeOptions.length)];
+      } else if (userInfo.permissionLevel === 3) {
+        // 会员用户
+        const welcomeOptions = [
+          '亲爱的会员，欢迎回来！',
+          '欢迎回家！今天想了解什么呢？',
+          '欢迎回来！您常选的款式有新款哦~'
+        ];
+        welcomeText = welcomeOptions[Math.floor(Math.random() * welcomeOptions.length)];
+      }
+      
+      if (welcomeText) {
+        this.setData({
+          welcomeMessage: welcomeText,
+          showWelcomeBarrage: true,
+          hasShownWelcome: true
+        });
+        
+        // 3秒后隐藏弹幕
+        setTimeout(() => {
+          this.setData({
+            showWelcomeBarrage: false
+          });
+        }, 3000);
+      }
+    },
+
+    
+    /**
      * 获取页面导航文本
      */
     getNavigationText(url) {
@@ -511,6 +561,11 @@ Component({
     attached() {
       // 初始化时获取快捷问题
       this.setDefaultQuickQuestions();
+      
+      // 延迟显示欢迎语，确保页面完全加载
+      setTimeout(() => {
+        this.showWelcomeMessage();
+      }, 1500);
     },
 
     /**

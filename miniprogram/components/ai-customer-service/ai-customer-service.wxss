@@ -360,3 +360,67 @@
     padding: 14rpx 20rpx;
   }
 }
+
+/* 欢迎语弹幕样式 */
+.welcome-barrage {
+  position: fixed;
+  right: 180rpx;  /* 悬浮按钮左侧 */
+  bottom: 180rpx;
+  z-index: 9998;
+  opacity: 0;
+  transform: translateX(20rpx);
+  transition: all 0.5s ease;
+  pointer-events: none;
+}
+
+.welcome-barrage.show {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+.barrage-content {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ffa500 100%);
+  color: white;
+  padding: 20rpx 30rpx;
+  border-radius: 40rpx;
+  box-shadow: 0 8rpx 24rpx rgba(255, 107, 107, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 15rpx;
+  max-width: 400rpx;
+  position: relative;
+  animation: barrageSlideIn 0.6s ease-out;
+}
+
+.barrage-content::before {
+  content: '';
+  position: absolute;
+  right: -15rpx;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 15rpx solid #ffa500;
+  border-top: 10rpx solid transparent;
+  border-bottom: 10rpx solid transparent;
+}
+
+.barrage-text {
+  font-size: 26rpx;
+  font-weight: 500;
+  white-space: nowrap;
+  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
+}
+
+/* 弹幕动画 */
+@keyframes barrageSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(50rpx) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
